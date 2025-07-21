@@ -1,0 +1,76 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  CLIENT
+  ADMIN
+}
+
+model Client {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      Role     @default(CLIENT)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime
+
+  appointments Appointment[]
+}
+
+model Barber {
+  id           String            @id @default(uuid())
+  name         String
+  age          Int
+  photoUrl     String
+  hiredAt      DateTime
+  specialities BarberSpecialty[]
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+  deletedAt    DateTime
+  Appointment  Appointment[]
+}
+
+model Specialty {
+  id           String            @id @default(uuid())
+  name         String            @unique
+  iconUrl      String
+  barbers      BarberSpecialty[]
+  appointments Appointment[]
+}
+
+model BarberSpecialty {
+  id          String @id @default(uuid())
+  barberId    String
+  specialtyId String
+
+  barber    Barber    @relation(fields: [barberId], references: [id], onDelete: Cascade)
+  specialty Specialty @relation(fields: [specialtyId], references: [id], onDelete: Cascade)
+
+  @@unique([barberId, specialtyId])
+}
+
+model Appointment {
+  id        String   @id @default(uuid())
+  date      DateTime
+  canceled  Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  userId      String
+  barberId    String
+  specialtyId String
+
+  client    Client    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  barber    Barber    @relation(fields: [barberId], references: [id], onDelete: Cascade)
+  specialty Specialty @relation(fields: [specialtyId], references: [id], onDelete: Cascade)
+
+  @@unique([barberId, date]) // impede agendamento duplicado no mesmo horário
+}
