@@ -6,6 +6,58 @@ Teste técnico de programador fullstack para a empresa ClickAtivo.
 • Clientes possam se cadastrar, autenticar e realizar agendamentos com barbeiros disponíveis.
 • O administrador visualize os agendamentos do dia e futuros de forma clara.
 
+## 📘 API REST – Rotas
+### 🔐 Autenticação
+
+| Método | Rota         | Descrição                     |
+|--------|--------------|-------------------------------|
+| POST   | `/login`     | Login de usuário, retorna JWT |
+| POST   | `/register`  | Cadastro de cliente           |
+
+---
+
+### 👤 Usuários (`/users`)
+| Método | Rota             | Descrição                        |
+|--------|------------------|----------------------------------|
+| GET    | `/users`       | Listar todos os usuários         |
+| GET    | `/users/:id`   | Buscar um usuário específico     |
+| POST   | `/users`       | Criar novo usuário               |
+
+---
+
+### ✂️ Barbeiros (`/barbers`)
+| Método | Rota               | Descrição                             |
+|--------|--------------------|----------------------------------------|
+| GET    | `/barbers`         | Listar todos os barbeiros             |
+| GET    | `/barbers/:id`     | Buscar barbeiro por ID                |
+| POST   | `/barbers`         | Cadastrar barbeiro                    |
+| PUT    | `/barbers/:id`     | Atualizar dados de um barbeiro        |
+| DELETE | `/barbers/:id`     | Remover barbeiro                      |
+
+---
+
+### 🪒 Especialidades (`/specialties`)
+| Método | Rota                  | Descrição                                |
+|--------|-----------------------|-------------------------------------------|
+| GET    | `/specialties`        | Listar especialidades                     |
+| GET    | `/specialties/:id`    | Buscar uma especialidade                  |
+| POST   | `/specialties`        | Criar especialidade                       |
+| PUT    | `/specialties/:id`    | Atualizar uma especialidade               |
+| DELETE | `/specialties/:id`    | Remover especialidade                     |
+
+---
+
+### 📅 Agendamentos (`/appointments`)
+| Método | Rota                    | Descrição                                     |
+|--------|-------------------------|-----------------------------------------------|
+| GET    | `/appointments`         | Listar agendamentos (cliente autenticado ou admin) |
+| GET    | `/appointments/:id`     | Buscar um agendamento específico              |
+| POST   | `/appointments`         | Criar um novo agendamento                     |
+| PUT    | `/appointments/:id`     | Atualizar agendamento (cancelar, remarcar)    |
+
+---
+
+
 ## funcionalidades do Sistema
 ### Autenticação
 • Cadastro e login de clientes (nome, e-mail, senha)

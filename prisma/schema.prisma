@@ -13,7 +13,7 @@ enum Role {
   ADMIN
 }
 
-model Client {
+model User {
   id        String   @id @default(uuid())
   name      String
   email     String   @unique
@@ -68,7 +68,7 @@ model Appointment {
   barberId    String
   specialtyId String
 
-  client    Client    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  client    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   barber    Barber    @relation(fields: [barberId], references: [id], onDelete: Cascade)
   specialty Specialty @relation(fields: [specialtyId], references: [id], onDelete: Cascade)
 
