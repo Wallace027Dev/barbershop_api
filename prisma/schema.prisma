@@ -45,6 +45,9 @@ model Specialty {
   iconUrl      String
   barbers      BarberSpecialty[]
   appointments Appointment[]
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+  deletedAt    DateTime
 }
 
 model BarberSpecialty {
@@ -62,11 +65,13 @@ model Appointment {
   id        String   @id @default(uuid())
   date      DateTime
   canceled  Boolean  @default(false)
-  createdAt DateTime @default(now())
-
   userId      String
   barberId    String
   specialtyId String
+
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+  deletedAt    DateTime
 
   client    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   barber    Barber    @relation(fields: [barberId], references: [id], onDelete: Cascade)
