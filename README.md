@@ -6,6 +6,13 @@ Teste técnico de programador fullstack para a empresa ClickAtivo.
 • Clientes possam se cadastrar, autenticar e realizar agendamentos com barbeiros disponíveis.
 • O administrador visualize os agendamentos do dia e futuros de forma clara.
 
+## Como subir o servidor
+1. Instalar o Docker
+2. Rodar o comando `docker-compose up`
+3. Configurar as variáveis de ambiente no arquivo `.env`
+  - DATABASE_URL="postgresql://user:senha@url/ClickBeard"
+4. Migrar o banco de dados `npx prisma migrate dev`
+
 ## 📘 API REST – Rotas
 ### 🔐 Autenticação
 
