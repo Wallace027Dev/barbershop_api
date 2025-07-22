@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { UserRepository } from "../repositories/UserRepository";
 import http from "../utils/http";
 import { IUser } from "../interfaces/IUser";
+import { validateUserWithoutPassword } from "../schemas/UserSchema";
 
 export class UserController {
   static async getAllUsers(
@@ -9,6 +10,9 @@ export class UserController {
     res: Response
   ): Promise<Response<IUser[]>> {
     const params = req.params;
+    const { success, error } = validateUserWithoutPassword(params);
+    if (!success) return http.badRequest(res, "Invalid params", error);
+
     const users = await UserRepository.findAll(params);
 
     if (users.length === 0) return http.notFound(res, "Users not found");
