@@ -1,11 +1,8 @@
 import express from "express";
+import { AuthController } from "../controller/AuthController";
 
 export const AuthRoutes = express.Router();
 
-AuthRoutes.post("/login", (req, res) => {
-  res.status(405).json({ message: "Method not allowed" });
-});
+AuthRoutes.post("/login", AuthController.login);
 
-AuthRoutes.post("/register", (req, res) => {
-  res.status(405).json({ message: "Method not allowed" });
-});
+AuthRoutes.post("/register", AuthController.register);

@@ -1,5 +1,11 @@
-export class AuthController {
-  static async login() {}
+import { Request, Response } from "express";
 
-  static async register() {}
+export class AuthController {
+  static async login(req: Request, res: Response) {
+      res.status(405).json({ message: "Method not allowed" });
+    }
+
+  static async register(req: Request, res: Response) {
+    res.status(405).json({ message: "Method not allowed" });
+  }
 }

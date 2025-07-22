@@ -1,19 +1,12 @@
 import express from "express";
+import { AppointmentController } from "../controller/AppointmentController";
 
 export const appointmentRoutes = express.Router();
 
-appointmentRoutes.get("/", (req, res) => {
-  res.status(405).json({ message: "Method not allowed" });
-});
+appointmentRoutes.get("/", AppointmentController.list);
 
-appointmentRoutes.get("/:id", (req, res) => {
-  res.status(405).json({ message: "Method not allowed" });
-})
+appointmentRoutes.get("/:id", AppointmentController.getById)
 
-appointmentRoutes.post("/", (req, res) => {
-  res.status(405).json({ message: "Method not allowed" });
-});
+appointmentRoutes.post("/", AppointmentController.create);
 
-appointmentRoutes.put("/:id", (req, res) => {
-  res.status(405).json({ message: "Method not allowed" });
-});
+appointmentRoutes.put("/:id", AppointmentController.update);

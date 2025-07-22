@@ -1,11 +1,23 @@
+import { Request, Response } from "express";
+
 export class BarberController {
-  static async list() {}
+  static async list(req: Request, res: Response) {
+    res.status(405).json({ message: "Method not allowed" });
+  }
 
-  static async getById() {}
+  static async getById(req: Request, res: Response) {
+    res.status(405).json({ message: "Method not allowed" });
+  }
 
-  static async create() {}
+  static async create(req: Request, res: Response) {
+    res.status(405).json({ message: "Method not allowed" });
+  }
 
-  static async update() {}
+  static async update(req: Request, res: Response) {
+    res.status(405).json({ message: "Method not allowed" });
+  }
 
-  static async delete() {}
+  static async delete(req: Request, res: Response) {
+    res.status(405).json({ message: "Method not allowed" });
+  }
 }

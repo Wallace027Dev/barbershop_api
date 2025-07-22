@@ -1,15 +1,10 @@
 import express from "express";
+import { UserController } from "../controller/UserController";
 
 export const userRoutes = express.Router();
 
-userRoutes.get("/", (req, res) => {
-  res.status(405).json({ message: "Method not allowed" });
-});
+userRoutes.get("/", UserController.list);
 
-userRoutes.get("/:id", (req, res) => {
-  res.status(405).json({ message: "Method not allowed" });
-})
+userRoutes.get("/:id", UserController.getById);
 
-userRoutes.post("/", (req, res) => {
-  res.status(405).json({ message: "Method not allowed" });
-});
+userRoutes.post("/", UserController.create);

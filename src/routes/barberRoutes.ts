@@ -1,23 +1,14 @@
 import express from "express";
+import { BarberController } from "../controller/BarberController";
 
 export const barberRoutes = express.Router();
 
-barberRoutes.get("/", (req, res) => {
-  res.status(405).json({ message: "Method not allowed" });
-});
+barberRoutes.get("/", BarberController.list);
 
-barberRoutes.get("/:id", (req, res) => {
-  res.status(405).json({ message: "Method not allowed" });
-})
+barberRoutes.get("/:id", BarberController.getById);
 
-barberRoutes.post("/", (req, res) => {
-  res.status(405).json({ message: "Method not allowed" });
-});
+barberRoutes.post("/", BarberController.create);
 
-barberRoutes.put("/:id", (req, res) => {
-  res.status(405).json({ message: "Method not allowed" });
-});
+barberRoutes.put("/:id", BarberController.update);
 
-barberRoutes.delete("/:id", (req, res) => {
-  res.status(405).json({ message: "Method not allowed" });
-});
+barberRoutes.delete("/:id", BarberController.delete);

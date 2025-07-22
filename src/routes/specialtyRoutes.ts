@@ -1,23 +1,14 @@
 import express from "express";
+import { SpecialtyController } from "../controller/SpecialtyController";
 
 export const specialtyRoutes = express.Router();
 
-specialtyRoutes.get("/", (req, res) => {
-  res.status(405).json({ message: "Method not allowed" });
-});
+specialtyRoutes.get("/", SpecialtyController.list);
 
-specialtyRoutes.get("/:id", (req, res) => {
-  res.status(405).json({ message: "Method not allowed" });
-})
+specialtyRoutes.get("/:id", SpecialtyController.getById);
 
-specialtyRoutes.post("/", (req, res) => {
-  res.status(405).json({ message: "Method not allowed" });
-});
+specialtyRoutes.post("/", SpecialtyController.create);
 
-specialtyRoutes.put("/:id", (req, res) => {
-  res.status(405).json({ message: "Method not allowed" });
-});
+specialtyRoutes.put("/:id", SpecialtyController.update);
 
-specialtyRoutes.delete("/:id", (req, res) => {
-  res.status(405).json({ message: "Method not allowed" });
-});
+specialtyRoutes.delete("/:id", SpecialtyController.delete);
