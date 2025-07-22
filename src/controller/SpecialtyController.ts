@@ -50,6 +50,7 @@ export class SpecialtyController {
     res: Response
   ): Promise<Response<ISpecialty>> {
     const body = req.body as ISpecialtyBase;
+
     const { success, data, error } = validateCreateSpecialtySchema(body);
     if (!success || !data) {
       return http.badRequest(res, "Invalid data", error);
@@ -72,11 +73,50 @@ export class SpecialtyController {
     return http.created(res, "Specialty created", specialty);
   }
 
-  static async update(req: Request, res: Response) {
-    res.status(405).json({ message: "Method not allowed" });
+  static async update(
+    req: Request,
+    res: Response
+  ): Promise<Response<ISpecialty>> {
+    const body = req.body as ISpecialtyBase;
+
+    const id = req.params.id;
+    if (!id) {
+      return res.status(400).json({ message: "Id is required" });
+    }
+
+    const specialtyExists = await SpecialtyRepository.findById(id);
+    if (!specialtyExists) {
+      return http.notFound(res, "Specialty not found");
+    }
+
+    const { success, data, error } = validateCreateSpecialtySchema(body);
+    if (!success || !data) {
+      return http.badRequest(res, "Invalid data", error);
+    }
+
+    const updatedSpecialty = {
+      ...specialtyExists,
+      name: data.name,
+      iconUrl: data.iconUrl,
+      updatedAt: new Date()
+    };
+
+    const specialty = await SpecialtyRepository.update(updatedSpecialty);
+    return http.ok(res, "Specialty updated", specialty);
   }
 
-  static async delete(req: Request, res: Response) {
-    res.status(405).json({ message: "Method not allowed" });
+  static async delete(req: Request, res: Response): Promise<Response> {
+    const id = req.params.id;
+    if (!id) {
+      return res.status(400).json({ message: "Id is required" });
+    }
+
+    const specialtyExists = await SpecialtyRepository.findById(id);
+    if (!specialtyExists) {
+      return http.notFound(res, "Specialty not found");
+    }
+
+    await SpecialtyRepository.delete(id);
+    return http.ok(res, "Specialty deleted");
   }
 }
