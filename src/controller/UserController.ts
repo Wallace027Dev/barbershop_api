@@ -1,23 +1,31 @@
 import { Request, Response } from "express";
+import { UserRepository } from "../repositories/UserRepository";
+import http from "../utils/http";
+import { IUser } from "../interfaces/IUser";
 
 export class UserController {
-  static async list(req: Request, res: Response) {
-    res.status(405).json({ message: "Method not allowed" });
+  static async getAllUsers(
+    req: Request,
+    res: Response
+  ): Promise<Response<IUser[]>> {
+    const params = req.params;
+    const users = await UserRepository.findAll(params);
+
+    if (users.length === 0) return http.notFound(res, "Users not found");
+
+    return http.ok(res, users);
   }
 
-  static async getById(req: Request, res: Response) {
-    res.status(405).json({ message: "Method not allowed" });
-  }
+  static async getUserById(
+    req: Request,
+    res: Response
+  ): Promise<Response<IUser>> {
+    const id = req.params.id;
+    if (!id) return http.badRequest(res, "Id is required");
 
-  static async create(req: Request, res: Response) {
-    res.status(405).json({ message: "Method not allowed" });
-  }
+    const user = await UserRepository.findById(id);
+    if (!user) return http.notFound(res, "User not found");
 
-  static async update(req: Request, res: Response) {
-    res.status(405).json({ message: "Method not allowed" });
-  }
-
-  static async delete(req: Request, res: Response) {
-    res.status(405).json({ message: "Method not allowed" });
+    return http.ok(res, user);
   }
 }

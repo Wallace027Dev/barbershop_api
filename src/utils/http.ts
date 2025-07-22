@@ -1,43 +1,58 @@
-import { HttpResponse } from "../types/Http";
+import { Response } from "express";
 
-export function ok(body?: Record<string, any>): HttpResponse {
-  return {
-    statusCode: 200,
-    body,
-  };
+function ok(
+  res: Response,
+  message = "Success",
+  data: Record<string, any> = {}
+): Response {
+  return res.status(200).json({ message, ...data });
 }
 
-export function created(body?: Record<string, any>): HttpResponse {
-  return {
-    statusCode: 201,
-    body,
-  };
+function created(
+  res: Response,
+  message = "Resource created",
+  data: Record<string, any> = {}
+): Response {
+  return res.status(201).json({ message, ...data });
 }
 
-export function badRequest(body?: Record<string, any>): HttpResponse {
-  return {
-    statusCode: 400,
-    body,
-  };
+function badRequest(
+  res: Response,
+  message = "Bad request",
+  data: Record<string, any> = {}
+): Response {
+  return res.status(400).json({ message, ...data });
 }
 
-export function unauthorized(body?: Record<string, any>): HttpResponse {
-  return {
-    statusCode: 401,
-    body,
-  };
+function unauthorized(
+  res: Response,
+  message = "Unauthorized",
+  data: Record<string, any> = {}
+): Response {
+  return res.status(401).json({ message, ...data });
 }
 
-export function notFound(body?: Record<string, any>): HttpResponse {
-  return {
-    statusCode: 404,
-    body,
-  };
+function notFound(
+  res: Response,
+  message = "Not found",
+  data: Record<string, any> = {}
+): Response {
+  return res.status(404).json({ message, ...data });
 }
 
-export function conflict(body?: Record<string, any>): HttpResponse {
-  return {
-    statusCode: 409,
-    body,
-  };
+function conflict(
+  res: Response,
+  message = "Conflict",
+  data: Record<string, any> = {}
+): Response {
+  return res.status(409).json({ message, ...data });
 }
+
+export default {
+  ok,
+  created,
+  badRequest,
+  unauthorized,
+  notFound,
+  conflict
+};

@@ -1,9 +1,11 @@
 import express from "express";
 
-export const routes = express.Router();
+export const router = express.Router();
 
-routes.use("/auth", require("./authRoutes"));
-routes.use("/users", require("./userRoutes"));
-routes.use("/barbers", require("./barberRoutes"));
-routes.use("/appointments", require("./appointmentRoutes"));
-routes.use("/specialties", require("./specialtyRoutes"));
+router.use(express.json());
+
+router.use("/auth", require("./authRoutes"));
+router.use("/users", require("./userRoutes"));
+router.use("/barbers", require("./barberRoutes"));
+router.use("/appointments", require("./appointmentRoutes"));
+router.use("/specialties", require("./specialtyRoutes"));
