@@ -9,7 +9,7 @@ const BaseUserSchema = z.object({
   role: z.enum(UserRole),
 });
 
-const UserSchemaWithoutPassword = BaseUserSchema.omit({ password: true });
+const UserSchemaWithoutPassword = BaseUserSchema.omit({ password: true }).partial();
 
 function parseSchema<T>(schema: z.ZodType<T>, data: unknown) {
   const result = schema.safeParse(data);

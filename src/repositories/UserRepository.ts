@@ -1,11 +1,12 @@
 import { db } from "../../prisma/db";
 import { IUser, IUserBase } from "../interfaces/IUser";
+import { UserRole } from "../types/UserRole";
 
 export class UserRepository {
   static async findAll(params: {
     name?: string;
     email?: string;
-    role?: string;
+    role?: UserRole;
   }) {
     return await db.user.findMany({
       where: params
