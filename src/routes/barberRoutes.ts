@@ -1,5 +1,5 @@
 import express from "express";
-import { BarberController } from "../controller/BarberController";
+import { BarberController } from "../controllers/BarberController";
 
 export const barberRoutes = express.Router();
 

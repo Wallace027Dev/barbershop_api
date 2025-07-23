@@ -1,5 +1,5 @@
 import express from "express";
-import { SpecialtyController } from "../controller/SpecialtyController";
+import { SpecialtyController } from "../controllers/SpecialtyController";
 
 export const specialtyRoutes = express.Router();
 

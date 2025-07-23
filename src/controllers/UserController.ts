@@ -3,7 +3,7 @@ import { Request, Response } from "express";
 import { UserRepository } from "../repositories/UserRepository";
 import { IUser, IUserBase } from "../interfaces/IUser";
 import { validateUserWithoutPassword } from "../schemas/UserSchema";
-import { cleanUserQueryParams } from "../helper/cleanUserQueryParams";
+import { cleanUserQueryParams } from "../helpers/cleanUserQueryParams";
 
 export class UserController {
   static async getAllUsers(
