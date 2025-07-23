@@ -1,5 +1,6 @@
 import z from "zod";
 import { IAppointmentBase } from "../interfaces/IAppointment";
+import { parseSchema } from "./parseSchema";
 
 const AppointmentSchema = z.object({
   date: z.iso.date(),
@@ -9,12 +10,6 @@ const AppointmentSchema = z.object({
   specialtyId: z.uuid(),
 });
 
-export function validateCreateAppointmentSchema(data: IAppointmentBase) {
-  const result = AppointmentSchema.safeParse(data);
-
-  return {
-    success: result.success,
-    data: result.data,
-    error: result.error?.issues,
-  };
+export function validateAppointBaseSchema(data: Partial<IAppointmentBase>) {
+  return parseSchema(AppointmentSchema, data);
 }

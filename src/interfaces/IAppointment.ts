@@ -1,9 +1,9 @@
 export interface IAppointmentBase {
   date: Date;
   canceled: boolean;
-  user_id: string;
-  barber_id: string;
-  specialty_id: string;
+  userId: string;
+  barberId: string;
+  specialtyId: string;
 }
 
 export interface IAppointment extends IAppointmentBase {
