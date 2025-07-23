@@ -1,6 +1,7 @@
 import "dotenv/config";
 import jwt from "jsonwebtoken";
 import http from "../utils/http";
+import bcrypt from "bcryptjs";
 import { db } from "../../prisma/db";
 import { Request, Response } from "express";
 import { UserRepository } from "../repositories/UserRepository";
@@ -22,17 +23,37 @@ export class AuthController {
     }
 
     const user = await db.user.findUnique({ where: { email } });
-    if (!user || user.password !== password) {
-      return http.unauthorized(res, "Invalid email or password");
+    if (!user) {
+      return http.unauthorized(
+        res,
+        "Invalid credentials. Verify your credentials"
+      );
     }
 
-    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET as string);
-    UserRepository.update({ ...user, token });
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      return http.unauthorized(
+        res,
+        "Invalid credentials. Verify your credentials"
+      );
+    }
 
-    return http.ok(res, "Login successful", { token } as TokenResponse);
+    const token = jwt.sign(
+      {
+        email: user.email,
+        role: user.role,
+      },
+      process.env.JWT_SECRET as string
+    );
+    const updatedUser = await UserRepository.update({ ...user, token });
+
+    return http.ok(res, "Login successful", { token: updatedUser.token });
   }
 
-  static async register(req: Request, res: Response): Promise<Response<TokenResponse>> {
+  static async register(
+    req: Request,
+    res: Response
+  ): Promise<Response<TokenResponse>> {
     const body = req.body as IUserBase;
 
     const { success, data, error } = validateCreateUserSchema(body);
@@ -45,10 +66,18 @@ export class AuthController {
       return http.conflict(res, "User already exists");
     }
 
-    const token = jwt.sign({ email: data.email },process.env.JWT_SECRET as string);
-    const newUser = { ...data, token } as IUserBase;
+    const passwordHash = await bcrypt.hash(data.password, 10);
+    const token = jwt.sign(
+      {
+        email: data.email,
+        role: data.role,
+      },
+      process.env.JWT_SECRET as string
+    );
 
-    const user = await UserRepository.create(newUser);
-    return http.created(res, "User created", { token: user.token });
+    const newUser = { ...data, token, password: passwordHash } as IUserBase;
+    const createdUser = await UserRepository.create(newUser);
+
+    return http.created(res, "User created", { token: createdUser.token });
   }
 }

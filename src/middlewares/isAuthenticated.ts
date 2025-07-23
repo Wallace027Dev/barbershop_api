@@ -5,8 +5,8 @@ import http from "../utils/http";
 declare global {
   namespace Express {
     interface Request {
-      userId?: number;
       userEmail?: string;
+      userRole?: string;
     }
   }
 }
@@ -30,12 +30,12 @@ export function isAuthenticated(
 
   try {
     const payload = verify(token, process.env.JWT_SECRET as string) as {
-      id: number;
       email: string;
+      role: string;
     };
 
-    req.userId = payload.id;
     req.userEmail = payload.email;
+    req.userRole = payload.role;
 
     return next();
   } catch (err: any) {

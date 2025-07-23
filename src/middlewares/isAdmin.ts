@@ -1,21 +1,12 @@
 import { Request, Response, NextFunction } from "express";
+import http from "../utils/http";
 
 export function isAdmin(req: Request, res: Response, next: NextFunction) {
-  if (req.user?.role !== "ADMIN") {
-    return res.status(403).json({
-      error: "Acesso negado. Apenas administradores podem realizar essa ação.",
-    });
+  const role = req.userRole;
+
+  if (!role || role !== "ADMIN") {
+    return http.forbidden(res, "Admin access only");
   }
 
   return next();
-}
-
-declare global {
-  namespace Express {
-    interface Request {
-      user?: {
-        role: string;
-      };
-    }
-  }
 }

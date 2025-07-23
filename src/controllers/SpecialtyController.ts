@@ -1,11 +1,12 @@
+import http from "../utils/http";
+import "dotenv/config";
 import { Request, Response } from "express";
 import { ISpecialty, ISpecialtyBase } from "../interfaces/ISpecialty";
+import { SpecialtyRepository } from "../repositories/SpecialtyRepository";
 import {
   validateCreateSpecialtySchema,
-  validateSpecialtyWithoutIconUrl
+  validateSpecialtyWithoutIconUrl,
 } from "../schemas/SpecialtySchema";
-import { SpecialtyRepository } from "../repositories/SpecialtyRepository";
-import http from "../utils/http";
 
 export class SpecialtyController {
   static async list(
@@ -49,7 +50,19 @@ export class SpecialtyController {
     req: Request,
     res: Response
   ): Promise<Response<ISpecialty>> {
-    const body = req.body as ISpecialtyBase;
+    const filename = req.file?.filename;
+
+    if (!filename) {
+      return http.badRequest(res, "Icon is required");
+    }
+
+    const iconUrl = `${process.env.BASE_URL}/uploads/${filename}`;
+    console.log(iconUrl);
+
+    const body = {
+      ...req.body,
+      iconUrl,
+    };
 
     const { success, data, error } = validateCreateSpecialtySchema(body);
     if (!success || !data) {
@@ -59,14 +72,6 @@ export class SpecialtyController {
     const specialtyExists = await SpecialtyRepository.findById(data.name);
     if (specialtyExists) {
       return http.conflict(res, "Specialty already exists");
-    }
-
-    // Função para fazer upload do 'icon' com multer
-    const imagePath = req.file?.filename as string;
-    if (imagePath) {
-      data.iconUrl = imagePath;
-    } else {
-      return http.badRequest(res, "Icon is required");
     }
 
     const specialty = await SpecialtyRepository.create(data);
@@ -98,7 +103,7 @@ export class SpecialtyController {
       ...specialtyExists,
       name: data.name,
       iconUrl: data.iconUrl,
-      updatedAt: new Date()
+      updatedAt: new Date(),
     };
 
     const specialty = await SpecialtyRepository.update(updatedSpecialty);

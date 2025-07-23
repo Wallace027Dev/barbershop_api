@@ -32,6 +32,14 @@ function unauthorized(
   return res.status(401).json({ message, data });
 }
 
+function forbidden(
+  res: Response,
+  message = "Forbidden",
+  data: Record<string, any> = {}
+): Response {
+  return res.status(403).json({ message, data });
+}
+
 function notFound(
   res: Response,
   message = "Not found",
@@ -53,6 +61,7 @@ export default {
   created,
   badRequest,
   unauthorized,
+  forbidden,
   notFound,
-  conflict
+  conflict,
 };

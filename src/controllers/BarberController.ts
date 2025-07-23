@@ -67,7 +67,7 @@ export class BarberController {
 
     const barberExists = await BarberRepository.findById(id);
     if (!barberExists) {
-      return http.notFound(res,  "Barber not found");
+    return http.notFound(res,  "Barber not found");
     }
 
     // Função para fazer upload da 'image' com multer
