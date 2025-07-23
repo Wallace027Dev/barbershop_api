@@ -21,6 +21,14 @@ export class UserRepository {
     });
   }
 
+  static async findByEmail(email: string) {
+    return await db.user.findUnique({
+      where: {
+        email
+      }
+    });
+  }
+
   static async create(data: IUserBase) {
     return await db.user.create({
       data

@@ -9,6 +9,7 @@ export interface IUserBase {
 
 export interface IUser extends IUserBase {
   id: string;
+  token?: string;
   createdAt: Date;
   updatedAt: Date | null;
   deletedAt: Date | null;
