@@ -12,7 +12,8 @@ Teste técnico de programador fullstack para a empresa ClickAtivo.
 3. Configurar as variáveis de ambiente no arquivo `.env`
   - DATABASE_URL="postgresql://user:senha@url/ClickBeard"
 4. Migrar o banco de dados `npm run db:migrate`
-5. Popular o banco de dados `npm run db:seed`
+5. Executar as migrations e seed `npm run db:start`
+6. Iniciar o servidor `npm run server:start`
 
 ## 📘 API REST – Rotas
 ### 🔐 Autenticação

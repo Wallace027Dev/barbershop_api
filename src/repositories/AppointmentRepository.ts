@@ -4,30 +4,37 @@ import { IAppointment, IAppointmentBase } from "../interfaces/IAppointment";
 export class AppointmentRepository {
   static async findAll(params: Partial<IAppointmentBase>) {
     return await db.appointment.findMany({
-      where: params
+      where: params,
     });
   }
 
   static async findById(id: string) {
     return await db.appointment.findUnique({
       where: {
-        id
-      }
+        id,
+      },
     });
   }
 
   static async create(data: IAppointmentBase) {
     return await db.appointment.create({
-      data
+      data,
     });
   }
 
   static async update(data: IAppointment) {
     return await db.appointment.update({
       where: {
-        id: data.id
+        id: data.id,
       },
-      data
+      data,
+    });
+  }
+
+  static async delete(id: string) {
+    return await db.appointment.update({
+      where: { id },
+      data: { deletedAt: new Date() },
     });
   }
 }

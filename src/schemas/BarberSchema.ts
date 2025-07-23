@@ -5,7 +5,7 @@ import { parseSchema } from "./parseSchema";
 const BarberSchema = z.object({
   name: z.string().min(3).max(30),
   age: z.number().min(18).max(100),
-  photoUrl: z.url(),
+  photoUrl: z.string(),
   specialties: z.array(z.string()),
   hiredAt: z.date(),
 });

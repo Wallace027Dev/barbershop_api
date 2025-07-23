@@ -37,10 +37,9 @@ export class SpecialtyRepository {
   }
 
   static async delete(id: string) {
-    return await db.specialty.delete({
-      where: {
-        id,
-      },
+    return await db.specialty.update({
+      where: { id },
+      data: { deletedAt: new Date() },
     });
   }
 }

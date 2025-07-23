@@ -6,6 +6,7 @@ import {
   validateCreateBarberSchema,
   validateBarberWithoutPhotoUrl
 } from "../schemas/BarberSchema";
+import { deleteImageFile } from "../helpers/deleteImageFile";
 
 export class BarberController {
   static async list(req: Request, res: Response): Promise<Response<IBarber[]>> {
@@ -39,14 +40,20 @@ export class BarberController {
 
   static async create(req: Request, res: Response): Promise<Response<IBarber>> {
     const body = req.body as IBarber;
+    const imagePath = req.file?.filename as string;
 
     const { success, data, error } = validateCreateBarberSchema(body);
     if (!success || !data) {
+      if (imagePath) deleteImageFile(imagePath);
       return http.badRequest(res, "Invalid data", error);
     }
 
-    // Função para fazer upload da 'image' com multer
-    const imagePath = req.file?.filename as string;
+    const barberAlreadyExists = await BarberRepository.findAll({ name: data.name });
+    if (barberAlreadyExists.length > 0) {
+      if (imagePath) deleteImageFile(imagePath);
+      return http.conflict(res, "Barber already exists");
+    }
+
     if (imagePath) {
       data.photoUrl = imagePath;
     } else {

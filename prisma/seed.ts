@@ -20,7 +20,7 @@ async function main() {
   const specialty = await prisma.specialty.create({
     data: {
       name: "Corte Masculino",
-      iconUrl: "/uploads/corte-masculino-127bfa29786ab163d.jpg",
+      iconUrl: "corte-masculino-127bfa29786ab163d.jpg",
     },
   });
 
@@ -28,7 +28,7 @@ async function main() {
     data: {
       name: "João Barbeiro",
       age: 30,
-      photoUrl: "/uploads/barbeiro-a0a347c95f34.png",
+      photoUrl: "barbeiro-a0a347c95f34.png",
       hiredAt: new Date("2024-01-01T09:00:00Z"),
     },
   });

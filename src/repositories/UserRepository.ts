@@ -55,10 +55,9 @@ export class UserRepository {
   }
 
   static async delete(id: string) {
-    return await db.user.delete({
-      where: {
-        id,
-      },
+    return await db.user.update({
+      where: { id },
+      data: { deletedAt: new Date() },
     });
   }
 }

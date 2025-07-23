@@ -6,7 +6,9 @@ import { SpecialtyRepository } from "../repositories/SpecialtyRepository";
 import {
   validateCreateSpecialtySchema,
   validateSpecialtyWithoutIconUrl,
+  validateUpdateSpecialtySchema,
 } from "../schemas/SpecialtySchema";
+import { deleteImageFile } from "../helpers/deleteImageFile";
 
 export class SpecialtyController {
   static async list(
@@ -51,21 +53,23 @@ export class SpecialtyController {
     res: Response
   ): Promise<Response<ISpecialty>> {
     const filename = req.file?.filename;
-
+    const body = req.body as ISpecialtyBase;
     if (!filename) {
       return http.badRequest(res, "Icon is required");
     }
 
-    const iconUrl = `${process.env.BASE_URL}/uploads/${filename}`;
-    console.log(iconUrl);
+    const specialtyAlreadyExists = await SpecialtyRepository.findAll(body.name);
+    if (specialtyAlreadyExists.length > 0) {
+      if (filename) deleteImageFile(filename);
+      return http.conflict(res, "Specialty already exists");
+    }
 
-    const body = {
-      ...req.body,
-      iconUrl,
-    };
-
-    const { success, data, error } = validateCreateSpecialtySchema(body);
+    const { success, data, error } = validateCreateSpecialtySchema({
+      ...body,
+      iconUrl: filename,
+    });
     if (!success || !data) {
+      if (filename) deleteImageFile(filename);
       return http.badRequest(res, "Invalid data", error);
     }
 
@@ -82,7 +86,9 @@ export class SpecialtyController {
     req: Request,
     res: Response
   ): Promise<Response<ISpecialty>> {
-    const body = req.body as ISpecialtyBase;
+    const body = req.body;
+    const filename = req.file?.filename;
+    console.log(filename);
 
     const id = req.params.id;
     if (!id) {
@@ -94,19 +100,22 @@ export class SpecialtyController {
       return http.notFound(res, "Specialty not found");
     }
 
-    const { success, data, error } = validateCreateSpecialtySchema(body);
-    if (!success || !data) {
-      return http.badRequest(res, "Invalid data", error);
-    }
-
-    const updatedSpecialty = {
+    const updateSpecialty = {
       ...specialtyExists,
-      name: data.name,
-      iconUrl: data.iconUrl,
+      name: body?.name ?? specialtyExists.name,
+      iconUrl: filename ?? specialtyExists.iconUrl,
       updatedAt: new Date(),
     };
 
-    const specialty = await SpecialtyRepository.update(updatedSpecialty);
+    const { success, data, error } = validateUpdateSpecialtySchema(updateSpecialty);
+    if (!success || !data) {
+      if (filename) deleteImageFile(filename);
+      return http.badRequest(res, "Invalid data", error);
+    }
+
+    deleteImageFile(specialtyExists.iconUrl);
+
+    const specialty = await SpecialtyRepository.update(updateSpecialty);
     return http.ok(res, "Specialty updated", specialty);
   }
 

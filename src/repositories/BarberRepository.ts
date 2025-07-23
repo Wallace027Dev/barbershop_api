@@ -8,38 +8,37 @@ export class BarberRepository {
     specialties?: string[];
   }) {
     return await db.barber.findMany({
-      where: params
+      where: params,
     });
   }
 
   static async findById(id: string) {
     return await db.barber.findUnique({
       where: {
-        id
-      }
+        id,
+      },
     });
   }
 
   static async create(data: IBarberBase) {
     return await db.barber.create({
-      data
+      data,
     });
   }
 
   static async update(data: IBarber) {
     return await db.barber.update({
       where: {
-        id: data.id
+        id: data.id,
       },
-      data
+      data,
     });
   }
 
   static async delete(id: string) {
-    return await db.barber.delete({
-      where: {
-        id
-      }
+    return await db.barber.update({
+      where: { id },
+      data: { deletedAt: new Date() },
     });
   }
 }
