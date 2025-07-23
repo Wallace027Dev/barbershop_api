@@ -8,6 +8,7 @@ export class SpecialtyRepository {
         name: {
           contains: name,
         },
+        deletedAt: null,
       },
     });
   }
@@ -16,6 +17,7 @@ export class SpecialtyRepository {
     return await db.specialty.findUnique({
       where: {
         id,
+        deletedAt: null,
       },
     });
   }

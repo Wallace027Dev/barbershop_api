@@ -33,7 +33,7 @@ model Barber {
   age          Int
   photoUrl     String
   hiredAt      DateTime
-  specialities BarberSpecialty[]
+  specialties BarberSpecialty[]
   createdAt    DateTime          @default(now())
   updatedAt    DateTime?          @updatedAt
   deletedAt    DateTime?

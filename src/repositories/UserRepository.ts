@@ -19,6 +19,7 @@ export class UserRepository {
           mode: "insensitive",
         },
         role: params.role,
+        deletedAt: null,
       },
     });
   }
@@ -27,6 +28,7 @@ export class UserRepository {
     return await db.user.findUnique({
       where: {
         id,
+        deletedAt: null,
       },
     });
   }

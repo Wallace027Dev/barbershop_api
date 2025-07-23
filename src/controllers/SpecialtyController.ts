@@ -131,6 +131,6 @@ export class SpecialtyController {
     }
 
     await SpecialtyRepository.delete(id);
-    return http.ok(res, "Specialty deleted");
+    return http.ok(res, "Specialty deleted", { name: specialtyExists.name });
   }
 }

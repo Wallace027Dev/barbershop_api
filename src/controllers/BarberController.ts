@@ -108,6 +108,6 @@ export class BarberController {
     }
 
     await BarberRepository.delete(id);
-    return http.ok(res, "Barber deleted");
+    return http.ok(res, "Barber deleted", { name: barberExists.name });
   }
 }
