@@ -7,6 +7,7 @@ const BarberSchema = z.object({
   age: z.number().min(18).max(100),
   photoUrl: z.url(),
   specialties: z.array(z.string()),
+  hiredAt: z.date(),
 });
 
 const BarberWithoutPhotoUrl = BarberSchema.omit({ photoUrl: true }).partial();

@@ -17,7 +17,7 @@ export class BarberController {
     }
 
     const barbers = await BarberRepository.findAll(params);
-    return http.ok(res, barbers);
+    return http.ok(res, "Barbers found", barbers);
   }
 
   static async getById(
@@ -34,7 +34,7 @@ export class BarberController {
       return res.status(404).json({ message: "Barber not found" });
     }
 
-    return http.ok(res, barber);
+    return http.ok(res, "Barber found", barber);
   }
 
   static async create(req: Request, res: Response): Promise<Response<IBarber>> {
@@ -67,7 +67,7 @@ export class BarberController {
 
     const barberExists = await BarberRepository.findById(id);
     if (!barberExists) {
-      return http.notFound(res, "Barber not found");
+      return http.notFound(res,  "Barber not found");
     }
 
     // Função para fazer upload da 'image' com multer

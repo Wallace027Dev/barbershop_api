@@ -1,10 +1,11 @@
-import { Request, Response } from "express";
-import { db } from "../../prisma/db";
+import "dotenv/config";
 import jwt from "jsonwebtoken";
 import http from "../utils/http";
+import { db } from "../../prisma/db";
+import { Request, Response } from "express";
 import { UserRepository } from "../repositories/UserRepository";
 import { validateCreateUserSchema } from "../schemas/UserSchema";
-import { IUser } from "../interfaces/IUser";
+import { IUserBase } from "../interfaces/IUser";
 
 interface TokenResponse {
   token: string;
@@ -32,7 +33,7 @@ export class AuthController {
   }
 
   static async register(req: Request, res: Response): Promise<Response<TokenResponse>> {
-    const body = req.body as IUser;
+    const body = req.body as IUserBase;
 
     const { success, data, error } = validateCreateUserSchema(body);
     if (!success || !data) {
@@ -44,7 +45,10 @@ export class AuthController {
       return http.conflict(res, "User already exists");
     }
 
-    const user = await UserRepository.create(data);
+    const token = jwt.sign({ email: data.email },process.env.JWT_SECRET as string);
+    const newUser = { ...data, token } as IUserBase;
+
+    const user = await UserRepository.create(newUser);
     return http.created(res, "User created", { token: user.token });
   }
 }

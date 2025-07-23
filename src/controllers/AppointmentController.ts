@@ -17,7 +17,7 @@ export class AppointmentController {
     }
 
     const appointments = await AppointmentRepository.findAll(params);
-    return http.ok(res, appointments);
+    return http.ok(res, "Appointments found", appointments);
   }
 
   static async getById(
@@ -34,7 +34,7 @@ export class AppointmentController {
       return http.notFound(res, "Appointment not found");
     }
 
-    return http.ok(res, appointment);
+    return http.ok(res, "Appointment found", appointment);
   }
 
   static async create(
@@ -75,7 +75,7 @@ export class AppointmentController {
 
     const updatedAppointment = {
       ...appointmentExists,
-      date: data.date,
+      date: new Date(data.date),
       canceled: data.canceled,
       userId: data.userId,
       barberId: data.barberId,

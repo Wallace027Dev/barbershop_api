@@ -23,7 +23,7 @@ export class UserController {
     const users = await UserRepository.findAll(dataParams);
     if (users.length === 0) return http.notFound(res, "Users not found");
 
-    return http.ok(res, users);
+    return http.ok(res, "Users found", users);
   }
 
   static async getUserById(
@@ -36,6 +36,6 @@ export class UserController {
     const user = await UserRepository.findById(id);
     if (!user) return http.notFound(res, "User not found");
 
-    return http.ok(res, user);
+    return http.ok(res, "User found", user);
   }
 }

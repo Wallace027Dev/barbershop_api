@@ -24,7 +24,7 @@ export class SpecialtyController {
       return res.status(404).json({ message: "Specialties not found" });
     }
 
-    return http.ok(res, specialties);
+    return http.ok(res, "Specialties found", specialties);
   }
 
   static async getById(
@@ -42,7 +42,7 @@ export class SpecialtyController {
       return res.status(404).json({ message: "Specialty not found" });
     }
 
-    return http.ok(res, specialty);
+    return http.ok(res, "Specialty found", specialty);
   }
 
   static async create(

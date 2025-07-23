@@ -6,7 +6,7 @@ export const logRequest =
     log({
       method: req.method,
       url: req.url,
-      headers: req.headers
+      headers: req.headers,
     });
 
     next();

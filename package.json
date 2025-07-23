@@ -9,8 +9,9 @@
     "dev:server:start": "nodemon src/server.ts",
     "dev:server:stop": "killall node",
     "dev:server:restart": "npm run dev:server:stop && npm run dev:server:start",
+    "db:generate": "npx prisma generate",
     "db:migrate": "npx prisma migrate dev",
-    "db:seed": "npx prisma db seed",
+    "db:seed": "ts-node prisma/seed.ts",
     "db:push": "npx prisma db push",
     "db:studio": "npx prisma studio",
     "db:reset": "npx prisma migrate reset --force"
@@ -34,6 +35,7 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/multer": "^2.0.0",
     "nodemon": "^3.1.10",
-    "prisma": "^6.12.0"
+    "prisma": "^6.12.0",
+    "ts-node": "^10.9.2"
   }
 }

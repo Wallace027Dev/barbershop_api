@@ -11,7 +11,8 @@ Teste técnico de programador fullstack para a empresa ClickAtivo.
 2. Rodar o comando `docker-compose up`
 3. Configurar as variáveis de ambiente no arquivo `.env`
   - DATABASE_URL="postgresql://user:senha@url/ClickBeard"
-4. Migrar o banco de dados `npx prisma migrate dev`
+4. Migrar o banco de dados `npm run db:migrate`
+5. Popular o banco de dados `npm run db:seed`
 
 ## 📘 API REST – Rotas
 ### 🔐 Autenticação

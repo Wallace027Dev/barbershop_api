@@ -6,40 +6,41 @@ export class SpecialtyRepository {
     return await db.specialty.findMany({
       where: {
         name: {
-          contains: name
-        }
-      }
+          contains: name,
+        },
+      },
     });
   }
 
   static async findById(id: string) {
     return await db.specialty.findUnique({
       where: {
-        id
-      }
+        id,
+      },
     });
   }
 
   static async create(data: ISpecialtyBase) {
     return await db.specialty.create({
-      data
+      data,
     });
   }
 
-  static async update(data: ISpecialty) {
+  static async update(data: Partial<ISpecialtyBase> & { id: string }) {
     return await db.specialty.update({
-      where: {
-        id: data.id
+      where: { id: data.id },
+      data: {
+        name: data.name,
+        iconUrl: data.iconUrl,
       },
-      data
     });
   }
 
   static async delete(id: string) {
     return await db.specialty.delete({
       where: {
-        id
-      }
+        id,
+      },
     });
   }
 }

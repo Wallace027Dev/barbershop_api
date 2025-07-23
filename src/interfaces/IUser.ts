@@ -1,15 +1,15 @@
-import { UserRole } from "../types/UserRole";
+import { Role } from "../../generated/prisma";
 
 export interface IUserBase {
   name: string;
   email: string;
   password: string;
-  role: UserRole;
+  role: Role;
+  token: string;
 }
 
 export interface IUser extends IUserBase {
   id: string;
-  token?: string;
   createdAt: Date;
   updatedAt: Date | null;
   deletedAt: Date | null;

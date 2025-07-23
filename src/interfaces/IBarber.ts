@@ -2,6 +2,7 @@ export interface IBarberBase {
   name: string;
   age: number;
   photoUrl: string;
+  hiredAt: Date;
   specialties: string[];
 }
 

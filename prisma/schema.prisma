@@ -21,8 +21,8 @@ model User {
   role      Role     @default(CLIENT)
   token     String
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  deletedAt DateTime
+  updatedAt DateTime? @updatedAt
+  deletedAt DateTime?
 
   appointments Appointment[]
 }
@@ -35,8 +35,8 @@ model Barber {
   hiredAt      DateTime
   specialities BarberSpecialty[]
   createdAt    DateTime          @default(now())
-  updatedAt    DateTime          @updatedAt
-  deletedAt    DateTime
+  updatedAt    DateTime?          @updatedAt
+  deletedAt    DateTime?
   Appointment  Appointment[]
 }
 
@@ -47,8 +47,8 @@ model Specialty {
   barbers      BarberSpecialty[]
   appointments Appointment[]
   createdAt    DateTime          @default(now())
-  updatedAt    DateTime          @updatedAt
-  deletedAt    DateTime
+  updatedAt    DateTime?          @updatedAt
+  deletedAt    DateTime?
 }
 
 model BarberSpecialty {
@@ -71,8 +71,8 @@ model Appointment {
   specialtyId String
 
   createdAt    DateTime          @default(now())
-  updatedAt    DateTime          @updatedAt
-  deletedAt    DateTime
+  updatedAt    DateTime?          @updatedAt
+  deletedAt    DateTime?
 
   client    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   barber    Barber    @relation(fields: [barberId], references: [id], onDelete: Cascade)
