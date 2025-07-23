@@ -9,46 +9,56 @@ export class UserRepository {
     role?: UserRole;
   }) {
     return await db.user.findMany({
-      where: params
+      where: {
+        name: {
+          contains: params.name,
+          mode: "insensitive",
+        },
+        email: {
+          contains: params.email,
+          mode: "insensitive",
+        },
+        role: params.role,
+      },
     });
   }
 
   static async findById(id: string) {
     return await db.user.findUnique({
       where: {
-        id
-      }
+        id,
+      },
     });
   }
 
   static async findByEmail(email: string) {
     return await db.user.findUnique({
       where: {
-        email
-      }
+        email,
+      },
     });
   }
 
   static async create(data: IUserBase) {
     return await db.user.create({
-      data
+      data,
     });
   }
 
   static async update(data: IUser) {
     return await db.user.update({
       where: {
-        id: data.id
+        id: data.id,
       },
-      data
+      data,
     });
   }
 
   static async delete(id: string) {
     return await db.user.delete({
       where: {
-        id
-      }
+        id,
+      },
     });
   }
 }

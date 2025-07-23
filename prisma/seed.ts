@@ -28,7 +28,7 @@ async function main() {
     data: {
       name: "João Barbeiro",
       age: 30,
-      photoUrl: "/uploads/joao-barbeiro-1.jpg",
+      photoUrl: "/uploads/barbeiro-a0a347c95f34.png",
       hiredAt: new Date("2024-01-01T09:00:00Z"),
     },
   });

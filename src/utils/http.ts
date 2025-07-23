@@ -5,7 +5,7 @@ function ok(
   message = "Success",
   data: Record<string, any> = {}
 ): Response {
-  return res.status(200).json({ message, ...data });
+  return res.status(200).json({ message, data });
 }
 
 function created(
@@ -13,7 +13,7 @@ function created(
   message = "Resource created",
   data: Record<string, any> = {}
 ): Response {
-  return res.status(201).json({ message, ...data });
+  return res.status(201).json({ message, data });
 }
 
 function badRequest(
@@ -21,7 +21,7 @@ function badRequest(
   message = "Bad request",
   data: Record<string, any> = {}
 ): Response {
-  return res.status(400).json({ message, ...data });
+  return res.status(400).json({ message, data });
 }
 
 function unauthorized(
@@ -29,7 +29,7 @@ function unauthorized(
   message = "Unauthorized",
   data: Record<string, any> = {}
 ): Response {
-  return res.status(401).json({ message, ...data });
+  return res.status(401).json({ message, data });
 }
 
 function notFound(
@@ -37,7 +37,7 @@ function notFound(
   message = "Not found",
   data: Record<string, any> = {}
 ): Response {
-  return res.status(404).json({ message, ...data });
+  return res.status(404).json({ message, data });
 }
 
 function conflict(
@@ -45,7 +45,7 @@ function conflict(
   message = "Conflict",
   data: Record<string, any> = {}
 ): Response {
-  return res.status(409).json({ message, ...data });
+  return res.status(409).json({ message, data });
 }
 
 export default {

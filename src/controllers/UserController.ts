@@ -12,14 +12,9 @@ export class UserController {
   ): Promise<Response<IUser[]>> {
     const params = req.query as Partial<IUserBase>;
 
-    const { success, data, error } = validateUserWithoutPassword(params);
-    if (!success || !data) {
-      return http.badRequest(res, "Invalid params", error);
-    }
-
-    const dataParams = cleanUserQueryParams(data);
+    const dataParams = cleanUserQueryParams(params);
     if ("error" in dataParams) return http.badRequest(res, dataParams.error);
-
+    
     const users = await UserRepository.findAll(dataParams);
     if (users.length === 0) return http.notFound(res, "Users not found");
 

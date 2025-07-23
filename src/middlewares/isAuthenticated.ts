@@ -11,7 +11,7 @@ declare global {
   }
 }
 
-export function authenticated(
+export function isAuthenticated(
   req: Request,
   res: Response,
   next: NextFunction
