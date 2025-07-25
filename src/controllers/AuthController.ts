@@ -7,6 +7,7 @@ import { Request, Response } from "express";
 import { UserRepository } from "../repositories/UserRepository";
 import { validateCreateUserSchema } from "../schemas/UserSchema";
 import { IUserBase } from "../interfaces/IUser";
+import { TokenService } from "../services/tokenService";
 
 interface TokenResponse {
   token: string;
@@ -38,13 +39,11 @@ export class AuthController {
       );
     }
 
-    const token = jwt.sign(
-      {
-        email: user.email,
-        role: user.role,
-      },
-      process.env.JWT_SECRET as string
-    );
+    const token = TokenService.generateToken({
+      email: user.email,
+      role: user.role,
+    });
+
     const updatedUser = await UserRepository.update({ ...user, token });
 
     return http.ok(res, "Login successful", { token: updatedUser.token });
@@ -67,13 +66,10 @@ export class AuthController {
     }
 
     const passwordHash = await bcrypt.hash(data.password, 10);
-    const token = jwt.sign(
-      {
-        email: data.email,
-        role: data.role,
-      },
-      process.env.JWT_SECRET as string
-    );
+    const token = TokenService.generateToken({
+      email: data.email,
+      role: data.role,
+    });
 
     const newUser = { ...data, token, password: passwordHash } as IUserBase;
     const createdUser = await UserRepository.create(newUser);
