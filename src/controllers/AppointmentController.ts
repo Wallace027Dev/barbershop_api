@@ -45,7 +45,7 @@ export class AppointmentController {
       return http.notFound(res, "Appointments not found");
     }
 
-    const formattedAppointments = appointments.map((appointment) => ({
+    const formattedAppointments = appointments.map((appointment: IAppointment) => ({
       ...appointment,
       date: formatToSaoPauloString(appointment.date),
     }));

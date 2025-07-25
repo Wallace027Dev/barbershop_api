@@ -1,5 +1,5 @@
+import { Prisma } from "@prisma/client";
 import { db } from "../../prisma/db";
-import { Prisma } from "../../generated/prisma/client";
 import { IAppointment, IAppointmentBase } from "../interfaces/IAppointment";
 
 export class AppointmentRepository {
