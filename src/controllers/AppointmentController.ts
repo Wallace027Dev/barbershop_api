@@ -68,45 +68,27 @@ export class AppointmentController {
   ): Promise<Response<IAppointment>> {
     const body = req.body as IAppointmentBase;
 
-    // Converter para Date aqui para validar e reutilizar
-    const date = DateTime.fromISO(String(body.date), {
-      zone: "America/Sao_Paulo",
-    }).toJSDate();
-    const { success, error } = validateAppointBaseSchema({ ...body, date });
-    if (!success) {
-      return http.badRequest(res, "Invalid data", error);
+    // 1. Validar dados e converter data
+    const appointmentStart = AppointmentController.parseAndValidateDate(body);
+    if (!appointmentStart.success) {
+      return http.badRequest(res, "Invalid data", appointmentStart.error);
     }
 
-    // Obter intervalo do novo agendamento
-    const start = date;
-    const end = new Date(date.getTime() + 30 * 60 * 1000);
-
-    // Buscar se já há agendamento nesse intervalo
-    const hasConflict = await AppointmentRepository.findAll({
-      AND: [
-        {
-          date: {
-            lt: end, // começa antes do novo terminar
-          },
-        },
-        {
-          date: {
-            gt: new Date(start.getTime() - 30 * 60 * 1000), // começa depois do novo início - duração
-          },
-        },
-      ],
-    });
-
-    if (hasConflict.length > 0) {
+    // 2. Verificar conflito de agendamento
+    const conflict = await AppointmentController.hasScheduleConflict(
+      appointmentStart.date
+    );
+    if (conflict) {
       return http.conflict(res, "Horário já reservado.");
     }
 
-    // Criar o agendamento
+    // 3. Criar o agendamento
     const appointment = await AppointmentRepository.create({
       ...body,
+      date: appointmentStart.date,
       canceled: false,
-      date,
     });
+
     appointment.date = toSaoPauloTime(appointment.date);
 
     return http.created(res, "Appointment created", appointment);
@@ -165,5 +147,37 @@ export class AppointmentController {
     if (min) return { gte: min };
     if (max) return { lte: max };
     return undefined;
+  }
+
+  private static parseAndValidateDate(
+    body: IAppointmentBase
+  ): { success: true; date: Date } | { success: false; error: any } {
+    const parsedDate = DateTime.fromISO(String(body.date), {
+      zone: "America/Sao_Paulo",
+    }).toJSDate();
+
+    const { success, error } = validateAppointBaseSchema({
+      ...body,
+      date: parsedDate,
+    });
+
+    return success
+      ? { success: true, date: parsedDate }
+      : { success: false, error };
+  }
+
+  private static async hasScheduleConflict(
+    date: Date,
+    durationMinutes = 30
+  ): Promise<boolean> {
+    const durationMs = durationMinutes * 60 * 1000;
+    const start = new Date(date.getTime() - durationMs);
+    const end = new Date(date.getTime() + durationMs);
+
+    const conflicts = await AppointmentRepository.findAll({
+      AND: [{ date: { lt: end } }, { date: { gt: start } }],
+    });
+
+    return conflicts.length > 0;
   }
 }
