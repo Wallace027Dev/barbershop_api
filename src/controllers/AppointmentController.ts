@@ -7,6 +7,7 @@ import {
   validateAppointBaseSchema,
 } from "../schemas/AppointmentSchema";
 import { DateTime } from "luxon";
+import { toSaoPauloTime } from "../utils/date";
 
 export class AppointmentController {
   static async list(
@@ -68,21 +69,32 @@ export class AppointmentController {
     const body = req.body as IAppointmentBase;
 
     // Converter para Date aqui para validar e reutilizar
-    const date = DateTime.fromISO(String(body.date), { zone: "America/Sao_Paulo" }).toJSDate();
+    const date = DateTime.fromISO(String(body.date), {
+      zone: "America/Sao_Paulo",
+    }).toJSDate();
     const { success, error } = validateAppointBaseSchema({ ...body, date });
     if (!success) {
       return http.badRequest(res, "Invalid data", error);
     }
 
-    // Gerar intervalo de 30 minutos para verificar conflitos
-    const thirtyMinutesLater = new Date(date.getTime() + 30 * 60 * 1000);
+    // Obter intervalo do novo agendamento
+    const start = date;
+    const end = new Date(date.getTime() + 30 * 60 * 1000);
 
     // Buscar se já há agendamento nesse intervalo
     const hasConflict = await AppointmentRepository.findAll({
-      date: {
-        gte: date,
-        lt: thirtyMinutesLater,
-      },
+      AND: [
+        {
+          date: {
+            lt: end, // começa antes do novo terminar
+          },
+        },
+        {
+          date: {
+            gt: new Date(start.getTime() - 30 * 60 * 1000), // começa depois do novo início - duração
+          },
+        },
+      ],
     });
 
     if (hasConflict.length > 0) {
@@ -95,6 +107,7 @@ export class AppointmentController {
       canceled: false,
       date,
     });
+    appointment.date = toSaoPauloTime(appointment.date);
 
     return http.created(res, "Appointment created", appointment);
   }
