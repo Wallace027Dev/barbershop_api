@@ -1,12 +1,12 @@
 import http from "../utils/http";
 import { Request, Response } from "express";
 import { BarberRepository } from "../repositories/BarberRepository";
-import { IBarber } from "../interfaces/IBarber";
+import { IBarber, IBarberBase } from "../interfaces/IBarber";
 import { deleteImageFile } from "../helpers/deleteImageFile";
 import {
   validateCreateBarberSchema,
   validateParamsBarber,
-  validateUpdateBarberSchema
+  validateUpdateBarberSchema,
 } from "../schemas/BarberSchema";
 
 export class BarberController {
@@ -40,16 +40,23 @@ export class BarberController {
   }
 
   static async create(req: Request, res: Response): Promise<Response<IBarber>> {
-    const body = req.body as IBarber;
+    const body = req.body as IBarberBase;
     const imagePath = req.file?.filename as string;
+    body.age = Number(body.age);
+    body.hiredAt = new Date(body.hiredAt);
 
-    const { success, error } = validateCreateBarberSchema(body);
+    const { success, error } = validateCreateBarberSchema({
+      ...body,
+      photoUrl: imagePath,
+    });
     if (!success) {
       if (imagePath) deleteImageFile(imagePath);
       return http.badRequest(res, "Invalid data", error);
     }
 
-    const barberAlreadyExists = await BarberRepository.findAll({ name: body.name });
+    const barberAlreadyExists = await BarberRepository.findAll({
+      name: body.name,
+    });
     if (barberAlreadyExists.length > 0) {
       if (imagePath) deleteImageFile(imagePath);
       return http.conflict(res, "Barber already exists");
@@ -75,7 +82,7 @@ export class BarberController {
 
     const barberExists = await BarberRepository.findById(id);
     if (!barberExists) {
-    return http.notFound(res,  "Barber not found");
+      return http.notFound(res, "Barber not found");
     }
 
     const imagePath = req.file?.filename as string;
@@ -89,7 +96,7 @@ export class BarberController {
       age: data.age,
       photoUrl: data.photoUrl,
       specialties: data.specialties,
-      updatedAt: new Date()
+      updatedAt: new Date(),
     };
 
     const { success, error } = validateUpdateBarberSchema(updatedBarber);
