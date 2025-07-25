@@ -190,7 +190,11 @@ export class AppointmentController {
     const end = new Date(date.getTime() + durationMs);
 
     const conflicts = await AppointmentRepository.findAll({
-      AND: [{ date: { lt: end } }, { date: { gt: start } }],
+      AND: [
+        { date: { lt: end } },
+        { date: { gt: start } },
+        { canceled: false },
+      ],
     });
 
     return conflicts.length > 0;
