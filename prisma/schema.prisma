@@ -14,13 +14,13 @@ enum Role {
 }
 
 model User {
-  id        String   @id @default(uuid())
+  id        String    @id @default(uuid())
   name      String
-  email     String   @unique
+  email     String    @unique
   password  String
-  role      Role     @default(CLIENT)
+  role      Role      @default(CLIENT)
   token     String
-  createdAt DateTime @default(now())
+  createdAt DateTime  @default(now())
   updatedAt DateTime? @updatedAt
   deletedAt DateTime?
 
@@ -28,16 +28,16 @@ model User {
 }
 
 model Barber {
-  id           String            @id @default(uuid())
-  name         String
-  age          Int
-  photoUrl     String
-  hiredAt      DateTime
+  id          String            @id @default(uuid())
+  name        String
+  age         Int
+  photoUrl    String
+  hiredAt     DateTime
   specialties BarberSpecialty[]
-  createdAt    DateTime          @default(now())
-  updatedAt    DateTime?          @updatedAt
-  deletedAt    DateTime?
-  Appointment  Appointment[]
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime?         @updatedAt
+  deletedAt   DateTime?
+  Appointment Appointment[]
 }
 
 model Specialty {
@@ -47,7 +47,7 @@ model Specialty {
   barbers      BarberSpecialty[]
   appointments Appointment[]
   createdAt    DateTime          @default(now())
-  updatedAt    DateTime?          @updatedAt
+  updatedAt    DateTime?         @updatedAt
   deletedAt    DateTime?
 }
 
@@ -63,18 +63,18 @@ model BarberSpecialty {
 }
 
 model Appointment {
-  id        String   @id @default(uuid())
-  date      DateTime
-  canceled  Boolean  @default(false)
+  id          String   @id @default(uuid())
+  date        DateTime
+  canceled    Boolean  @default(false)
   userId      String
   barberId    String
   specialtyId String
 
-  createdAt    DateTime          @default(now())
-  updatedAt    DateTime?          @updatedAt
-  deletedAt    DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+  deletedAt DateTime?
 
-  client    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  client    User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   barber    Barber    @relation(fields: [barberId], references: [id], onDelete: Cascade)
   specialty Specialty @relation(fields: [specialtyId], references: [id], onDelete: Cascade)
 

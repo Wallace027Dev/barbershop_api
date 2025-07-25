@@ -8,6 +8,8 @@ export interface IUserBase {
   token: string;
 }
 
+export type IUserValidate = Omit<IUser, "token">;
+
 export interface IUser extends IUserBase {
   id: string;
   createdAt: Date;

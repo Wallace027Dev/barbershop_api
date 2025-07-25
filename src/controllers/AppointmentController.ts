@@ -1,22 +1,47 @@
+import http from "../utils/http";
 import { Request, Response } from "express";
 import { IAppointment, IAppointmentBase } from "../interfaces/IAppointment";
-import { validateAppointBaseSchema } from "../schemas/AppointmentSchema";
-import http from "../utils/http";
 import { AppointmentRepository } from "../repositories/AppointmentRepository";
+import {
+  AppointmentParamsSchema,
+  validateAppointBaseSchema,
+} from "../schemas/AppointmentSchema";
 
 export class AppointmentController {
   static async list(
     req: Request,
     res: Response
   ): Promise<Response<IAppointment[]>> {
-    const params = req.query as Partial<IAppointmentBase>;
+    const { canceled, minDateTime, maxDateTime } =
+      AppointmentController.parseQueryParams(req.query);
 
-    const { success, data, error } = validateAppointBaseSchema(params);
-    if (!success || !data) {
-      return http.badRequest(res, "Invalid params", error);
+    const validation = AppointmentParamsSchema.safeParse({
+      canceled,
+      minDateTime,
+      maxDateTime,
+    });
+    if (!validation.success) {
+      return http.badRequest(res, "Invalid params", validation.error);
     }
 
-    const appointments = await AppointmentRepository.findAll(params);
+    const {
+      canceled: parsedCanceled,
+      minDateTime: min,
+      maxDateTime: max,
+    } = validation.data;
+
+    const createdAtFilter = AppointmentController.buildDateFilter(min, max);
+
+    const query = {
+      ...(parsedCanceled !== undefined && { canceled: parsedCanceled }),
+      ...(createdAtFilter && { createdAt: createdAtFilter }),
+    };
+
+    const appointments = await AppointmentRepository.findAll(query);
+
+    if (appointments.length === 0)
+      return http.notFound(res, "Appointments not found");
+
     return http.ok(res, "Appointments found", appointments);
   }
 
@@ -30,9 +55,7 @@ export class AppointmentController {
     }
 
     const appointment = await AppointmentRepository.findById(id);
-    if (!appointment) {
-      return http.notFound(res, "Appointment not found");
-    }
+    if (!appointment) return http.notFound(res, "Appointment not found");
 
     return http.ok(res, "Appointment found", appointment);
   }
@@ -43,8 +66,8 @@ export class AppointmentController {
   ): Promise<Response<IAppointment>> {
     const body = req.body as IAppointmentBase;
 
-    const { success, data, error } = validateAppointBaseSchema(body);
-    if (!success || !data) {
+    const { success, error } = validateAppointBaseSchema(body);
+    if (!success) {
       return http.badRequest(res, "Invalid data", error);
     }
 
@@ -68,22 +91,42 @@ export class AppointmentController {
       return http.notFound(res, "Appointment not found");
     }
 
-    const { success, data, error } = validateAppointBaseSchema(body);
-    if (!success || !data) {
+    const { success, error } = validateAppointBaseSchema(body);
+    if (!success) {
       return http.badRequest(res, "Invalid data", error);
     }
 
     const updatedAppointment = {
       ...appointmentExists,
-      date: new Date(data.date),
-      canceled: data.canceled,
-      userId: data.userId,
-      barberId: data.barberId,
-      specialtyId: data.specialtyId,
-      updatedAt: new Date()
+      date: new Date(body.date),
+      canceled: body.canceled,
+      userId: body.userId,
+      barberId: body.barberId,
+      specialtyId: body.specialtyId,
+      updatedAt: new Date(),
     };
 
     const appointment = await AppointmentRepository.update(updatedAppointment);
     return http.ok(res, "Appointment updated", appointment);
+  }
+
+  private static parseQueryParams(query: any) {
+    const { canceled, minDateTime, maxDateTime } = query;
+
+    return {
+      canceled:
+        canceled === "true" ? true : canceled === "false" ? false : undefined,
+      minDateTime:
+        typeof minDateTime === "string" ? new Date(minDateTime) : undefined,
+      maxDateTime:
+        typeof maxDateTime === "string" ? new Date(maxDateTime) : undefined,
+    };
+  }
+
+  private static buildDateFilter(min?: Date, max?: Date) {
+    if (min && max) return { gte: min, lte: max };
+    if (min) return { gte: min };
+    if (max) return { lte: max };
+    return undefined;
   }
 }

@@ -1,31 +1,29 @@
-import http from "../utils/http";
 import "dotenv/config";
+import http from "../utils/http";
 import { Request, Response } from "express";
 import { ISpecialty, ISpecialtyBase } from "../interfaces/ISpecialty";
 import { SpecialtyRepository } from "../repositories/SpecialtyRepository";
+import { deleteImageFile } from "../helpers/deleteImageFile";
 import {
   validateCreateSpecialtySchema,
-  validateSpecialtyWithoutIconUrl,
+  validateParamsSpecialty,
   validateUpdateSpecialtySchema,
 } from "../schemas/SpecialtySchema";
-import { deleteImageFile } from "../helpers/deleteImageFile";
 
 export class SpecialtyController {
   static async list(
     req: Request,
     res: Response
   ): Promise<Response<ISpecialty[]>> {
-    const params = req.query as Partial<ISpecialtyBase>;
+    const { name } = req.query as Partial<ISpecialtyBase>;
 
-    const { success, data, error } = validateSpecialtyWithoutIconUrl(params);
-    if (!success || !data) {
+    const { success, error } = validateParamsSpecialty({ name });
+    if (!success) {
       return res.status(400).json({ message: "Invalid params", error });
     }
 
-    const specialties = await SpecialtyRepository.findAll(data.name);
-    if (specialties.length === 0) {
-      return res.status(404).json({ message: "Specialties not found" });
-    }
+    const specialties = await SpecialtyRepository.findAll(name);
+    if (specialties.length === 0) return http.notFound(res, "Specialties not found");
 
     return http.ok(res, "Specialties found", specialties);
   }
@@ -41,9 +39,7 @@ export class SpecialtyController {
     }
 
     const specialty = await SpecialtyRepository.findById(id);
-    if (!specialty) {
-      return res.status(404).json({ message: "Specialty not found" });
-    }
+    if (!specialty) return res.status(404).json({ message: "Specialty not found" });
 
     return http.ok(res, "Specialty found", specialty);
   }
@@ -53,32 +49,32 @@ export class SpecialtyController {
     res: Response
   ): Promise<Response<ISpecialty>> {
     const filename = req.file?.filename;
-    const body = req.body as ISpecialtyBase;
+    const { name } = req.body as ISpecialtyBase;
     if (!filename) {
       return http.badRequest(res, "Icon is required");
     }
 
-    const specialtyAlreadyExists = await SpecialtyRepository.findAll(body.name);
+    const specialtyAlreadyExists = await SpecialtyRepository.findAll(name);
     if (specialtyAlreadyExists.length > 0) {
       if (filename) deleteImageFile(filename);
       return http.conflict(res, "Specialty already exists");
     }
 
-    const { success, data, error } = validateCreateSpecialtySchema({
-      ...body,
+    const { success, error } = validateCreateSpecialtySchema({
+      name,
       iconUrl: filename,
     });
-    if (!success || !data) {
+    if (!success) {
       if (filename) deleteImageFile(filename);
       return http.badRequest(res, "Invalid data", error);
     }
 
-    const specialtyExists = await SpecialtyRepository.findById(data.name);
+    const specialtyExists = await SpecialtyRepository.findById(name);
     if (specialtyExists) {
       return http.conflict(res, "Specialty already exists");
     }
 
-    const specialty = await SpecialtyRepository.create(data);
+    const specialty = await SpecialtyRepository.create({ name, iconUrl: filename });
     return http.created(res, "Specialty created", specialty);
   }
 
@@ -88,7 +84,6 @@ export class SpecialtyController {
   ): Promise<Response<ISpecialty>> {
     const body = req.body;
     const filename = req.file?.filename;
-    console.log(filename);
 
     const id = req.params.id;
     if (!id) {
@@ -107,8 +102,8 @@ export class SpecialtyController {
       updatedAt: new Date(),
     };
 
-    const { success, data, error } = validateUpdateSpecialtySchema(updateSpecialty);
-    if (!success || !data) {
+    const { success, error } = validateUpdateSpecialtySchema(updateSpecialty);
+    if (!success) {
       if (filename) deleteImageFile(filename);
       return http.badRequest(res, "Invalid data", error);
     }

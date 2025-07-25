@@ -5,6 +5,34 @@ export class AppointmentRepository {
   static async findAll(params: Partial<IAppointmentBase>) {
     return await db.appointment.findMany({
       where: params,
+      include: {
+        client: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            password: true,
+            role: true,
+            token: true,
+          },
+        },
+        barber: {
+          select: {
+            id: true,
+            name: true,
+            age: true,
+            photoUrl: true,
+            hiredAt: true,
+          },
+        },
+        specialty: {
+          select: {
+            id: true,
+            name: true,
+            iconUrl: true,
+          },
+        },
+      },
     });
   }
 
@@ -12,6 +40,34 @@ export class AppointmentRepository {
     return await db.appointment.findUnique({
       where: {
         id,
+      },
+      include: {
+        client: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            password: true,
+            role: true,
+            token: true,
+          },
+        },
+        barber: {
+          select: {
+            id: true,
+            name: true,
+            age: true,
+            photoUrl: true,
+            hiredAt: true,
+          },
+        },
+        specialty: {
+          select: {
+            id: true,
+            name: true,
+            iconUrl: true,
+          },
+        },
       },
     });
   }

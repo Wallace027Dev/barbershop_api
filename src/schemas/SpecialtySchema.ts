@@ -2,23 +2,19 @@ import z from "zod";
 import { ISpecialtyBase } from "../interfaces/ISpecialty";
 import { parseSchema } from "./parseSchema";
 
-const SpecialtySchema = z.object({
+const baseSchema = z.object({
   name: z.string().min(3).max(30),
   iconUrl: z.string(),
 });
 
-const SpecialtyWithoutIconUrl = SpecialtySchema.omit({ iconUrl: true }).partial();
+const partialSchema = baseSchema.partial();
+const noIconSchema = baseSchema.omit({ iconUrl: true }).partial();
 
-const SpecialtyOptionalSchema = SpecialtySchema.optional();
+export const validateCreateSpecialtySchema = (data: ISpecialtyBase) =>
+  parseSchema(baseSchema, data);
 
-export function validateCreateSpecialtySchema(data: ISpecialtyBase) {
-  return parseSchema(SpecialtySchema, data);
-}
+export const validateParamsSpecialty = (data: Partial<ISpecialtyBase>) =>
+  parseSchema(noIconSchema, data);
 
-export function validateSpecialtyWithoutIconUrl(data: Partial<ISpecialtyBase>) {
-  return parseSchema(SpecialtyWithoutIconUrl, data);
-}
-
-export function validateUpdateSpecialtySchema(data: Partial<ISpecialtyBase>) {
-  return parseSchema(SpecialtyOptionalSchema, data);
-}
+export const validateUpdateSpecialtySchema = (data: Partial<ISpecialtyBase>) =>
+  parseSchema(partialSchema, data);

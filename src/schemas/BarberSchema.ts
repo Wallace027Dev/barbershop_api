@@ -10,12 +10,17 @@ const BarberSchema = z.object({
   hiredAt: z.date(),
 });
 
-const BarberWithoutPhotoUrl = BarberSchema.omit({ photoUrl: true }).partial();
+const PartialSchema = BarberSchema.partial();
+const paramsSchema = BarberSchema.omit({ photoUrl: true }).partial();
 
-export function validateBarberWithoutPhotoUrl(data: Partial<IBarberBase>) {
-  return parseSchema(BarberWithoutPhotoUrl, data);
+export function validateParamsBarber(data: Partial<IBarberBase>) {
+  return parseSchema(paramsSchema, data);
 }
 
 export function validateCreateBarberSchema(data: Partial<IBarberBase>) {
   return parseSchema(BarberSchema, data);
+}
+
+export function validateUpdateBarberSchema(data: Partial<IBarberBase>) {
+  return parseSchema(PartialSchema, data);
 }
