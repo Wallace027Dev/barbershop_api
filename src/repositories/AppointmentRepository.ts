@@ -1,8 +1,9 @@
 import { db } from "../../prisma/db";
+import { Prisma } from '../../generated/prisma/client';
 import { IAppointment, IAppointmentBase } from "../interfaces/IAppointment";
 
 export class AppointmentRepository {
-  static async findAll(params: Partial<IAppointmentBase>) {
+  static async findAll(params: Prisma.AppointmentWhereInput) {
     return await db.appointment.findMany({
       where: params,
       include: {

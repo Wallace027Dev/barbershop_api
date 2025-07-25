@@ -17,7 +17,7 @@ router.use(logRequest());
 router.use("/uploads", express.static(path.resolve(__dirname, "..", "..", "uploads")));
 
 router.use("/auth", authRoutes);
-router.use("/users", isAdmin, isAuthenticated, userRoutes);
+router.use("/users", isAuthenticated, isAdmin, userRoutes);
 router.use("/appointments", isAuthenticated, appointmentRoutes);
 router.use("/barbers", isAuthenticated, barberRoutes);
 router.use("/specialties", isAuthenticated, specialtyRoutes);

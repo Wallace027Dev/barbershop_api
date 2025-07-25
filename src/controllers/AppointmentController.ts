@@ -6,6 +6,7 @@ import {
   AppointmentParamsSchema,
   validateAppointBaseSchema,
 } from "../schemas/AppointmentSchema";
+import { DateTime } from "luxon";
 
 export class AppointmentController {
   static async list(
@@ -66,12 +67,35 @@ export class AppointmentController {
   ): Promise<Response<IAppointment>> {
     const body = req.body as IAppointmentBase;
 
-    const { success, error } = validateAppointBaseSchema(body);
+    // Converter para Date aqui para validar e reutilizar
+    const date = DateTime.fromISO(String(body.date), { zone: "America/Sao_Paulo" }).toJSDate();
+    const { success, error } = validateAppointBaseSchema({ ...body, date });
     if (!success) {
       return http.badRequest(res, "Invalid data", error);
     }
 
-    const appointment = await AppointmentRepository.create(body);
+    // Gerar intervalo de 30 minutos para verificar conflitos
+    const thirtyMinutesLater = new Date(date.getTime() + 30 * 60 * 1000);
+
+    // Buscar se já há agendamento nesse intervalo
+    const hasConflict = await AppointmentRepository.findAll({
+      date: {
+        gte: date,
+        lt: thirtyMinutesLater,
+      },
+    });
+
+    if (hasConflict.length > 0) {
+      return http.conflict(res, "Horário já reservado.");
+    }
+
+    // Criar o agendamento
+    const appointment = await AppointmentRepository.create({
+      ...body,
+      canceled: false,
+      date,
+    });
+
     return http.created(res, "Appointment created", appointment);
   }
 

@@ -4,7 +4,6 @@ import { parseSchema } from "./parseSchema";
 
 const AppointmentSchema = z.object({
   date: z.date(),
-  canceled: z.boolean(),
   userId: z.uuid(),
   barberId: z.uuid(),
   specialtyId: z.uuid(),
