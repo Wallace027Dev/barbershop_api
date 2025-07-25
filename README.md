@@ -8,12 +8,10 @@ Teste técnico de programador fullstack para a empresa ClickAtivo.
 
 ## Como subir o servidor
 1. Instalar o Docker
-2. Rodar o comando `docker-compose up`
-3. Configurar as variáveis de ambiente no arquivo `.env`
-  - DATABASE_URL="postgresql://user:senha@url/ClickBeard"
-4. Migrar o banco de dados `npm run db:migrate`
-5. Executar as migrations e seed `npm run db:start`
-6. Iniciar o servidor `npm run server:start`
+2. Rodar o comando `npm run docker:start`
+3. Configurar as variáveis de ambiente no arquivo `.env` usando o exemplo do arquivo `.env.example`
+4. Executar as migrations e seed `npm run db:start`
+5. Iniciar o servidor `npm run server:start`
 
 ## 📘 API REST – Rotas
 ### 🔐 Autenticação
@@ -30,7 +28,6 @@ Teste técnico de programador fullstack para a empresa ClickAtivo.
 |--------|------------------|----------------------------------|
 | GET    | `/users`       | Listar todos os usuários         |
 | GET    | `/users/:id`   | Buscar um usuário específico     |
-| POST   | `/users`       | Criar novo usuário               |
 
 ---
 
@@ -57,12 +54,13 @@ Teste técnico de programador fullstack para a empresa ClickAtivo.
 ---
 
 ### 📅 Agendamentos (`/appointments`)
-| Método | Rota                    | Descrição                                     |
-|--------|-------------------------|-----------------------------------------------|
+| Método | Rota                    | Descrição                                          |
+|--------|-------------------------|----------------------------------------------------|
 | GET    | `/appointments`         | Listar agendamentos (cliente autenticado ou admin) |
-| GET    | `/appointments/:id`     | Buscar um agendamento específico              |
-| POST   | `/appointments`         | Criar um novo agendamento                     |
-| PUT    | `/appointments/:id`     | Atualizar agendamento (cancelar, remarcar)    |
+| GET    | `/appointments/:id`     | Buscar um agendamento específico                   |
+| GET    | `/appointments/user/:id`| Buscar agendamentos de um usuário                  |
+| POST   | `/appointments`         | Criar um novo agendamento                          |
+| PUT    | `/appointments/:id/cancel`| Cancelar um agendamento                          |
 
 ---
 

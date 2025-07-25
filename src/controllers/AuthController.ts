@@ -1,4 +1,3 @@
-import "dotenv/config";
 import http from "../utils/http";
 import bcrypt from "bcryptjs";
 import { db } from "../../prisma/db";
@@ -64,7 +63,7 @@ export class AuthController {
       return http.conflict(res, "User already exists");
     }
 
-    const passwordHash = await bcrypt.hash(body.password, 10);
+    const passwordHash = await bcrypt.hash(body.password, process.env.BCRYPT_SALT_ROUNDS as string);
     const token = TokenService.generateToken({
       email: body.email,
       role: body.role,

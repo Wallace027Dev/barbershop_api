@@ -7,6 +7,8 @@ appointmentRoutes.get("/", AppointmentController.list);
 
 appointmentRoutes.get("/:id", AppointmentController.getById);
 
+appointmentRoutes.get("/user/:id", AppointmentController.getMyAppointments);
+
 appointmentRoutes.post("/", AppointmentController.create);
 
 appointmentRoutes.put("/:id/cancel", AppointmentController.update);

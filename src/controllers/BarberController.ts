@@ -120,7 +120,9 @@ export class BarberController {
       return http.notFound(res, "Barber not found");
     }
 
+    deleteImageFile(barberExists.photoUrl);
     await BarberRepository.delete(id);
+
     return http.ok(res, "Barber deleted", { name: barberExists.name });
   }
 }

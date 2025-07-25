@@ -1,12 +1,32 @@
+import cors from "cors";
 import express from "express";
-import "dotenv/config";
 import { router } from "./routes";
+import { db } from "../prisma/db";
+import "dotenv/config";
 
 const app = express();
-const PORT = process.env.PORT || 3001;
-
 app.use(router);
+// Configura CORS com origem do .env
+app.use(
+  cors({
+    origin: process.env.CORS_ORIGIN,
+  })
+);
 
-app
-  .listen(PORT, () => console.log("Server is running"))
-  .on("error", (err) => console.log(err));
+async function startServer() {
+  try {
+    // Testa a conexão com o banco
+    await db.$connect();
+    console.log("✅ Conectado ao banco de dados");
+
+    const PORT = process.env.PORT || 3000;
+    app.listen(PORT, () => {
+      console.log(`🚀 Servidor rodando em http://localhost:${PORT}`);
+    });
+  } catch (error) {
+    console.error("❌ Erro ao conectar ao banco de dados:", error);
+    process.exit(1);
+  }
+}
+
+startServer();

@@ -7,16 +7,6 @@ export class AppointmentRepository {
     return await db.appointment.findMany({
       where: { ...params, deletedAt: null },
       include: {
-        client: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-            password: true,
-            role: true,
-            token: true,
-          },
-        },
         barber: {
           select: {
             id: true,

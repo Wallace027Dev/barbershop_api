@@ -1,13 +1,14 @@
 import http from "../utils/http";
+import { formatToSaoPauloString } from "../utils/date";
 import { Request, Response } from "express";
 import { IAppointment, IAppointmentBase } from "../interfaces/IAppointment";
 import { AppointmentRepository } from "../repositories/AppointmentRepository";
+import { DateTime } from "luxon";
+import { UserRepository } from "../repositories/UserRepository";
 import {
   AppointmentParamsSchema,
   validateCreateAppointSchema,
 } from "../schemas/AppointmentSchema";
-import { DateTime } from "luxon";
-import { formatToSaoPauloString } from "../utils/date";
 
 export class AppointmentController {
   static async list(
@@ -70,30 +71,53 @@ export class AppointmentController {
     });
   }
 
+  static async getMyAppointments(
+    req: Request,
+    res: Response
+  ): Promise<Response> {
+    const id = req.params.id;
+    if (!id) {
+      return http.unauthorized(res, "Id is required");
+    }
+
+    const user = await UserRepository.findById(id);
+    if (!user) {
+      return http.notFound(res, "User not found");
+    }
+
+    const appointments = await AppointmentRepository.findAll({
+      userId: user.id,
+      deletedAt: null,
+    });
+
+    return http.ok(res, "Appointments found", appointments);
+  }
+
   static async create(
     req: Request,
     res: Response
   ): Promise<Response<IAppointment>> {
     const body = req.body as IAppointmentBase;
 
-    // 1. Validar dados e converter data
     const appointmentStart = AppointmentController.parseAndValidateDate(body);
     if (!appointmentStart.success) {
       return http.badRequest(res, "Invalid data", appointmentStart.error);
     }
 
-    // 2. Verificar conflito de agendamento
-    const conflict = await AppointmentController.hasScheduleConflict(
-      appointmentStart.date
-    );
-    if (conflict) {
-      return http.conflict(res, "Horário já reservado.");
+    const date = appointmentStart.date;
+    const hour = date.getHours();
+    if (hour < 8 || hour >= 18) {
+      return http.badRequest(res, "Schedule must be between 8h and 18h");
     }
 
-    // 3. Criar o agendamento
+    const conflict = await AppointmentController.hasScheduleConflict(date);
+    if (conflict) {
+      return http.conflict(res, "Schedule conflict");
+    }
+
     const appointment = await AppointmentRepository.create({
       ...body,
-      date: appointmentStart.date,
+      date,
       canceled: false,
     });
 
@@ -126,7 +150,7 @@ export class AppointmentController {
     if (diffInMinutes < 120) {
       return http.forbidden(
         res,
-        "Cancelamento não permitido. É necessário pelo menos 2 horas de antecedência."
+        "You can only cancel an appointment 2 hours in advance"
       );
     }
 

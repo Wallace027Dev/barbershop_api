@@ -1,4 +1,3 @@
-import "dotenv/config";
 import http from "../utils/http";
 import { Request, Response } from "express";
 import { ISpecialty, ISpecialtyBase } from "../interfaces/ISpecialty";
