@@ -27,6 +27,25 @@ export class BarberRepository {
           : undefined,
         deletedAt: null,
       },
+      select: {
+        id: true,
+        name: true,
+        age: true,
+        photoUrl: true,
+        hiredAt: true,
+        createdAt: true,
+        updatedAt: true,
+        deletedAt: true,
+        specialties: {
+          select: {
+            specialty: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
+      },
     });
   }
 
@@ -36,42 +55,61 @@ export class BarberRepository {
         id,
         deletedAt: null,
       },
+      select: {
+        id: true,
+        name: true,
+        age: true,
+        photoUrl: true,
+        hiredAt: true,
+        createdAt: true,
+        updatedAt: true,
+        deletedAt: true,
+        specialties: {
+          select: {
+            specialty: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
+      },
     });
   }
 
   static async create(data: IBarberBase) {
-  const { specialties, ...barberData } = data;
+    const { specialties, ...barberData } = data;
 
-  return await db.barber.create({
-    data: {
-      ...barberData,
-      specialties: {
-        create: specialties.map((id) => ({
-          specialty: {
-            connect: { id },
-          },
-        })),
+    return await db.barber.create({
+      data: {
+        ...barberData,
+        specialties: {
+          create: specialties.map((id) => ({
+            specialty: {
+              connect: { id },
+            },
+          })),
+        },
       },
-    },
-  });
-}
+    });
+  }
 
   static async update(data: IBarberBase) {
-  const { specialties, ...barberData } = data;
+    const { specialties, ...barberData } = data;
 
-  return await db.barber.create({
-    data: {
-      ...barberData,
-      specialties: {
-        create: specialties.map((id) => ({
-          specialty: {
-            connect: { id },
-          },
-        })),
+    return await db.barber.create({
+      data: {
+        ...barberData,
+        specialties: {
+          create: specialties.map((id) => ({
+            specialty: {
+              connect: { id },
+            },
+          })),
+        },
       },
-    },
-  });
-}
+    });
+  }
 
   static async delete(id: string) {
     return await db.barber.update({
