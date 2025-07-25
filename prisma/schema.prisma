@@ -42,7 +42,7 @@ model Barber {
 
 model Specialty {
   id           String            @id @default(uuid())
-  name         String            @unique
+  name         String
   iconUrl      String
   barbers      BarberSpecialty[]
   appointments Appointment[]

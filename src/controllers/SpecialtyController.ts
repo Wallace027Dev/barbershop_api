@@ -54,12 +54,6 @@ export class SpecialtyController {
       return http.badRequest(res, "Icon is required");
     }
 
-    const specialtyAlreadyExists = await SpecialtyRepository.findAll(name);
-    if (specialtyAlreadyExists.length > 0) {
-      if (filename) deleteImageFile(filename);
-      return http.conflict(res, "Specialty already exists");
-    }
-
     const { success, error } = validateCreateSpecialtySchema({
       name,
       iconUrl: filename,
@@ -69,8 +63,9 @@ export class SpecialtyController {
       return http.badRequest(res, "Invalid data", error);
     }
 
-    const specialtyExists = await SpecialtyRepository.findById(name);
-    if (specialtyExists) {
+    const specialtyExists = await SpecialtyRepository.findAll(name);
+    if (specialtyExists.length > 0) {
+      if (filename) deleteImageFile(filename);
       return http.conflict(res, "Specialty already exists");
     }
 
@@ -126,6 +121,7 @@ export class SpecialtyController {
     }
 
     await SpecialtyRepository.delete(id);
+    deleteImageFile(specialtyExists.iconUrl);
     return http.ok(res, "Specialty deleted", { name: specialtyExists.name });
   }
 }

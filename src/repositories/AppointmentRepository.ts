@@ -1,11 +1,11 @@
 import { db } from "../../prisma/db";
-import { Prisma } from '../../generated/prisma/client';
+import { Prisma } from "../../generated/prisma/client";
 import { IAppointment, IAppointmentBase } from "../interfaces/IAppointment";
 
 export class AppointmentRepository {
   static async findAll(params: Prisma.AppointmentWhereInput) {
     return await db.appointment.findMany({
-      where: params,
+      where: { ...params, deletedAt: null },
       include: {
         client: {
           select: {
@@ -41,6 +41,7 @@ export class AppointmentRepository {
     return await db.appointment.findUnique({
       where: {
         id,
+        deletedAt: null,
       },
       include: {
         client: {
