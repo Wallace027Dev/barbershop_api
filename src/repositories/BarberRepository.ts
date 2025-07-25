@@ -2,11 +2,7 @@ import { db } from "../../prisma/db";
 import { IBarberBase, IBarber } from "../interfaces/IBarber";
 
 export class BarberRepository {
-  static async findAll(params: {
-    name?: string;
-    age?: number;
-    specialties?: string[];
-  }) {
+  static async findAll(params: Partial<IBarberBase>) {
     return await db.barber.findMany({
       where: {
         name: params.name
@@ -94,7 +90,7 @@ export class BarberRepository {
     });
   }
 
-  static async update(data: IBarberBase) {
+  static async update(data: IBarber) {
     const { specialties, ...barberData } = data;
 
     return await db.barber.create({

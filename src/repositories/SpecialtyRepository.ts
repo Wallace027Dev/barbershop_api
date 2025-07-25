@@ -28,7 +28,7 @@ export class SpecialtyRepository {
     });
   }
 
-  static async update(data: Partial<ISpecialtyBase> & { id: string }) {
+  static async update(data: ISpecialty) {
     return await db.specialty.update({
       where: { id: data.id },
       data: {
