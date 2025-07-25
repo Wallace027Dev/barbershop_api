@@ -63,7 +63,10 @@ export class AuthController {
       return http.conflict(res, "User already exists");
     }
 
-    const passwordHash = await bcrypt.hash(body.password, process.env.BCRYPT_SALT_ROUNDS as string);
+    const passwordHash = await bcrypt.hash(
+      body.password,
+      Number(process.env.BCRYPT_SALT_ROUNDS)
+    );
     const token = TokenService.generateToken({
       email: body.email,
       role: body.role,

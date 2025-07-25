@@ -5,8 +5,8 @@ import { db } from "../prisma/db";
 import "dotenv/config";
 
 const app = express();
+
 app.use(router);
-// Configura CORS com origem do .env
 app.use(
   cors({
     origin: process.env.CORS_ORIGIN,
@@ -15,7 +15,6 @@ app.use(
 
 async function startServer() {
   try {
-    // Testa a conexão com o banco
     await db.$connect();
     console.log("✅ Conectado ao banco de dados");
 
