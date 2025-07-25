@@ -5,8 +5,9 @@ import { DateTime } from "luxon";
  * @param date Date (UTC)
  * @returns Date formatada no fuso de São Paulo
  */
-export function toSaoPauloTime(date: Date): Date {
+
+export function formatToSaoPauloString(date: Date): string {
   return DateTime.fromJSDate(date, { zone: "utc" })
     .setZone("America/Sao_Paulo")
-    .toJSDate();
+    .toFormat("yyyy-MM-dd HH:mm");
 }

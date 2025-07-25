@@ -7,7 +7,7 @@ import {
   validateAppointBaseSchema,
 } from "../schemas/AppointmentSchema";
 import { DateTime } from "luxon";
-import { toSaoPauloTime } from "../utils/date";
+import { formatToSaoPauloString } from "../utils/date";
 
 export class AppointmentController {
   static async list(
@@ -40,11 +40,16 @@ export class AppointmentController {
     };
 
     const appointments = await AppointmentRepository.findAll(query);
-
-    if (appointments.length === 0)
+    if (appointments.length === 0) {
       return http.notFound(res, "Appointments not found");
+    }
 
-    return http.ok(res, "Appointments found", appointments);
+    const formattedAppointments = appointments.map((appointment) => ({
+      ...appointment,
+      date: formatToSaoPauloString(appointment.date),
+    }));
+
+    return http.ok(res, "Appointments found", formattedAppointments);
   }
 
   static async getById(
@@ -59,7 +64,10 @@ export class AppointmentController {
     const appointment = await AppointmentRepository.findById(id);
     if (!appointment) return http.notFound(res, "Appointment not found");
 
-    return http.ok(res, "Appointment found", appointment);
+    return http.ok(res, "Appointment found", {
+      ...appointment,
+      date: formatToSaoPauloString(appointment.date),
+    });
   }
 
   static async create(
@@ -89,9 +97,10 @@ export class AppointmentController {
       canceled: false,
     });
 
-    appointment.date = toSaoPauloTime(appointment.date);
-
-    return http.created(res, "Appointment created", appointment);
+    return http.created(res, "Appointment created", {
+      ...appointment,
+      date: formatToSaoPauloString(appointment.date),
+    });
   }
 
   static async update(
