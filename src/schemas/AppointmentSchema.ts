@@ -2,7 +2,7 @@ import z from "zod";
 import { IAppointmentBase } from "../interfaces/IAppointment";
 import { parseSchema } from "./parseSchema";
 
-const AppointmentSchema = z.object({
+const AppointmentCreateSchema = z.object({
   date: z.date(),
   userId: z.uuid(),
   barberId: z.uuid(),
@@ -15,10 +15,16 @@ export const AppointmentParamsSchema = z.object({
   maxDateTime: z.date().optional(),
 });
 
-export function validateAppointBaseSchema(data: Partial<IAppointmentBase>) {
-  return parseSchema(AppointmentSchema, data);
+const AppointmentUpdateSchema = z.object({ canceled: z.boolean() });
+
+export function validateCreateAppointSchema(data: Partial<IAppointmentBase>) {
+  return parseSchema(AppointmentCreateSchema, data);
 }
 
 export function validateAppointParamsSchema(data: Partial<IAppointmentBase>) {
   return parseSchema(AppointmentParamsSchema, data);
+}
+
+export function validateUpdateAppointSchema(data: Partial<IAppointmentBase>) {
+  return parseSchema(AppointmentUpdateSchema, data);
 }

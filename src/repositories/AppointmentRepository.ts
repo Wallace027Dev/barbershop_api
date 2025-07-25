@@ -79,12 +79,15 @@ export class AppointmentRepository {
     });
   }
 
-  static async update(data: IAppointment) {
+  static async update(data: Partial<IAppointment>) {
     return await db.appointment.update({
       where: {
         id: data.id,
       },
-      data,
+      data: {
+        date: data.date,
+        canceled: data.canceled,
+      },
     });
   }
 

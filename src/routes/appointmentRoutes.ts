@@ -9,6 +9,6 @@ appointmentRoutes.get("/:id", AppointmentController.getById);
 
 appointmentRoutes.post("/", AppointmentController.create);
 
-appointmentRoutes.put("/:id", AppointmentController.update);
+appointmentRoutes.put("/:id/cancel", AppointmentController.update);
 
 export default appointmentRoutes;

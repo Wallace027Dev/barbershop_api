@@ -4,7 +4,7 @@ import { IAppointment, IAppointmentBase } from "../interfaces/IAppointment";
 import { AppointmentRepository } from "../repositories/AppointmentRepository";
 import {
   AppointmentParamsSchema,
-  validateAppointBaseSchema,
+  validateCreateAppointSchema,
 } from "../schemas/AppointmentSchema";
 import { DateTime } from "luxon";
 import { formatToSaoPauloString } from "../utils/date";
@@ -107,8 +107,6 @@ export class AppointmentController {
     req: Request,
     res: Response
   ): Promise<Response<IAppointment>> {
-    const body = req.body as IAppointmentBase;
-
     const id = req.params.id;
     if (!id) {
       return http.badRequest(res, "Id is required");
@@ -119,23 +117,31 @@ export class AppointmentController {
       return http.notFound(res, "Appointment not found");
     }
 
-    const { success, error } = validateAppointBaseSchema(body);
-    if (!success) {
-      return http.badRequest(res, "Invalid data", error);
+    const now = DateTime.now().setZone("America/Sao_Paulo");
+    const appointmentTime = DateTime.fromJSDate(appointmentExists.date).setZone(
+      "America/Sao_Paulo"
+    );
+
+    const diffInMinutes = appointmentTime.diff(now, "minutes").minutes;
+    if (diffInMinutes < 120) {
+      return http.forbidden(
+        res,
+        "Cancelamento não permitido. É necessário pelo menos 2 horas de antecedência."
+      );
     }
 
     const updatedAppointment = {
       ...appointmentExists,
-      date: new Date(body.date),
-      canceled: body.canceled,
-      userId: body.userId,
-      barberId: body.barberId,
-      specialtyId: body.specialtyId,
+      canceled: true,
       updatedAt: new Date(),
     };
 
     const appointment = await AppointmentRepository.update(updatedAppointment);
-    return http.ok(res, "Appointment updated", appointment);
+
+    return http.ok(res, "Appointment canceled", {
+      ...appointment,
+      date: formatToSaoPauloString(appointment.date),
+    });
   }
 
   private static parseQueryParams(query: any) {
@@ -165,7 +171,7 @@ export class AppointmentController {
       zone: "America/Sao_Paulo",
     }).toJSDate();
 
-    const { success, error } = validateAppointBaseSchema({
+    const { success, error } = validateCreateAppointSchema({
       ...body,
       date: parsedDate,
     });
