@@ -42,15 +42,17 @@ export class AppointmentController {
 
     const appointments = await AppointmentRepository.findAll(query);
     if (appointments.length === 0) {
-      return http.notFound(res, "Appointments not found");
+      return http.notFound(res, "Nenhum agendamento encontrado");
     }
 
-    const formattedAppointments = appointments.map((appointment: IAppointment) => ({
-      ...appointment,
-      date: formatToSaoPauloString(appointment.date),
-    }));
+    const formattedAppointments = appointments.map(
+      (appointment: IAppointment) => ({
+        ...appointment,
+        date: formatToSaoPauloString(appointment.date),
+      })
+    );
 
-    return http.ok(res, "Appointments found", formattedAppointments);
+    return http.ok(res, "Agendamentos não encontrados", formattedAppointments);
   }
 
   static async getById(
@@ -59,13 +61,13 @@ export class AppointmentController {
   ): Promise<Response<IAppointment>> {
     const id = req.params.id;
     if (!id) {
-      return http.badRequest(res, "Id is required");
+      return http.badRequest(res, "Id é obrigatório");
     }
 
     const appointment = await AppointmentRepository.findById(id);
-    if (!appointment) return http.notFound(res, "Appointment not found");
+    if (!appointment) return http.notFound(res, "Agendamento não encontrado");
 
-    return http.ok(res, "Appointment found", {
+    return http.ok(res, "Agendamento não encontrado", {
       ...appointment,
       date: formatToSaoPauloString(appointment.date),
     });
@@ -77,12 +79,12 @@ export class AppointmentController {
   ): Promise<Response> {
     const id = req.params.id;
     if (!id) {
-      return http.unauthorized(res, "Id is required");
+      return http.unauthorized(res, "Id é obrigatório");
     }
 
     const user = await UserRepository.findById(id);
     if (!user) {
-      return http.notFound(res, "User not found");
+      return http.notFound(res, "Usuário não encontrado");
     }
 
     const appointments = await AppointmentRepository.findAll({
@@ -90,7 +92,7 @@ export class AppointmentController {
       deletedAt: null,
     });
 
-    return http.ok(res, "Appointments found", appointments);
+    return http.ok(res, "Agendamento encontrado", appointments);
   }
 
   static async create(
@@ -101,18 +103,18 @@ export class AppointmentController {
 
     const appointmentStart = AppointmentController.parseAndValidateDate(body);
     if (!appointmentStart.success) {
-      return http.badRequest(res, "Invalid data", appointmentStart.error);
+      return http.badRequest(res, "Dados inválidos", appointmentStart.error);
     }
 
     const date = appointmentStart.date;
     const hour = date.getHours();
     if (hour < 8 || hour >= 18) {
-      return http.badRequest(res, "Schedule must be between 8h and 18h");
+      return http.badRequest(res, "Agendamento disponível apenas de 8h a 18h");
     }
 
     const conflict = await AppointmentController.hasScheduleConflict(date);
     if (conflict) {
-      return http.conflict(res, "Schedule conflict");
+      return http.conflict(res, "Conflito de horários com outro agendamento");
     }
 
     const appointment = await AppointmentRepository.create({
@@ -121,7 +123,7 @@ export class AppointmentController {
       canceled: false,
     });
 
-    return http.created(res, "Appointment created", {
+    return http.created(res, "Agendamento criado", {
       ...appointment,
       date: formatToSaoPauloString(appointment.date),
     });
@@ -133,12 +135,12 @@ export class AppointmentController {
   ): Promise<Response<IAppointment>> {
     const id = req.params.id;
     if (!id) {
-      return http.badRequest(res, "Id is required");
+      return http.badRequest(res, "Id é obrigatório");
     }
 
     const appointmentExists = await AppointmentRepository.findById(id);
     if (!appointmentExists) {
-      return http.notFound(res, "Appointment not found");
+      return http.notFound(res, "Agendamento não encontrado");
     }
 
     const now = DateTime.now().setZone("America/Sao_Paulo");
@@ -150,7 +152,7 @@ export class AppointmentController {
     if (diffInMinutes < 120) {
       return http.forbidden(
         res,
-        "You can only cancel an appointment 2 hours in advance"
+        "Agendamento deve ser cancelado com 2 horas de antecedência"
       );
     }
 
@@ -162,7 +164,7 @@ export class AppointmentController {
 
     const appointment = await AppointmentRepository.update(updatedAppointment);
 
-    return http.ok(res, "Appointment canceled", {
+    return http.ok(res, "Agendamento cancelado", {
       ...appointment,
       date: formatToSaoPauloString(appointment.date),
     });

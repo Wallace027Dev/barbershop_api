@@ -18,14 +18,14 @@ export class AuthController {
   ): Promise<Response<TokenResponse>> {
     const { email, password } = req.body;
     if (!email || !password) {
-      return http.badRequest(res, "Email and password are required");
+      return http.badRequest(res, "Email e senha são obrigatórios");
     }
 
     const user = await db.user.findUnique({ where: { email } });
     if (!user) {
       return http.unauthorized(
         res,
-        "Invalid credentials. Verify your credentials"
+        "Credenciais inválidas. Verifique suas credenciais"
       );
     }
 
@@ -33,7 +33,7 @@ export class AuthController {
     if (!isPasswordValid) {
       return http.unauthorized(
         res,
-        "Invalid credentials. Verify your credentials"
+        "Credenciais inválidas. Verifique suas credenciais"
       );
     }
 
@@ -44,7 +44,7 @@ export class AuthController {
 
     const updatedUser = await UserRepository.update({ ...user, token });
 
-    return http.ok(res, "Login successful", { token: updatedUser.token });
+    return http.ok(res, "Login realizado com sucesso", { token: updatedUser.token });
   }
 
   static async register(
@@ -55,12 +55,12 @@ export class AuthController {
 
     const { success, error } = validateCreateUserSchema(body);
     if (!success) {
-      return http.badRequest(res, "Invalid data", error);
+      return http.badRequest(res, "Dados inválidos", error);
     }
 
     const userExists = await UserRepository.findByEmail(body.email);
     if (userExists) {
-      return http.conflict(res, "User already exists");
+      return http.conflict(res, "Usuário com esse email já cadastrado");
     }
 
     const passwordHash = await bcrypt.hash(
@@ -75,6 +75,6 @@ export class AuthController {
     const newUser = { ...body, token, password: passwordHash } as IUserBase;
     const createdUser = await UserRepository.create(newUser);
 
-    return http.created(res, "User created", { token: createdUser.token });
+    return http.created(res, "Usuário criado", { token: createdUser.token });
   }
 }

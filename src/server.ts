@@ -1,8 +1,8 @@
+import "dotenv/config";
 import cors from "cors";
 import express from "express";
 import { router } from "./routes";
 import { db } from "../prisma/db";
-import "dotenv/config";
 import { logRequest } from "./middlewares/logger";
 
 const app = express();
