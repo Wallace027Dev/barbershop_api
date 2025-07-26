@@ -10,8 +10,11 @@ app.use(router);
 app.use(
   cors({
     origin: process.env.CORS_ORIGIN,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    credentials: true,
   })
 );
+app.options('*', cors());
 
 async function startServer() {
   try {
