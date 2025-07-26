@@ -13,11 +13,16 @@ export class UserController {
 
     const dataParams = cleanUserQueryParams(params);
     if ("error" in dataParams) return http.badRequest(res, dataParams.error);
-    
+
     const users = await UserRepository.findAll(dataParams);
     if (users.length === 0) return http.notFound(res, "Users not found");
 
-    return http.ok(res, "Users found", users);
+    const usersWithoutPassword = users.map((user: IUser) => ({
+      ...user,
+      password: undefined
+    }));
+
+    return http.ok(res, "Users found", usersWithoutPassword);
   }
 
   static async getUserById(
@@ -30,6 +35,8 @@ export class UserController {
     const user = await UserRepository.findById(id);
     if (!user) return http.notFound(res, "User not found");
 
-    return http.ok(res, "User found", user);
+    const { password, ...userWithoutPassword } = user;
+
+    return http.ok(res, "User found", userWithoutPassword);
   }
 }
