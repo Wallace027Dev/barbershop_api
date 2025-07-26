@@ -3,16 +3,20 @@ import express from "express";
 import { router } from "./routes";
 import { db } from "../prisma/db";
 import "dotenv/config";
+import { logRequest } from "./middlewares/logger";
 
 const app = express();
 
-app.use(router);
+app.use(express.json());
+app.use(logRequest());
+
 app.use(
   cors({
     origin: process.env.CORS_ORIGIN,
     credentials: true,
   })
 );
+app.use(router);
 console.log("CORS_ORIGIN", process.env.CORS_ORIGIN);
 
 async function startServer() {

@@ -7,13 +7,10 @@ import barberRoutes from "./barberRoutes";
 import specialtyRoutes from "./specialtyRoutes";
 import { isAuthenticated } from "../middlewares/isAuthenticated";
 import { errorHandler } from "../middlewares/errorHandler";
-import { logRequest } from "../middlewares/logger";
 import { isAdmin } from "../middlewares/isAdmin";
 
 export const router = express.Router();
 
-router.use(express.json());
-router.use(logRequest());
 router.use("/uploads", express.static(path.resolve(__dirname, "..", "..", "uploads")));
 
 router.use("/auth", authRoutes);
